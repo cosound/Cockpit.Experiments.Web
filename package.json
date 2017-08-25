@@ -5,13 +5,13 @@
   "repository": "git@github.com:cosound/Cockpit.Experiments.Web.git",
   "author": "Jacob Poul Richardt",
   "dependencies": {
+    "autosize": "3.0.15",
+    "crossroads": "0.12.2",
     "jquery": "2.2.3",
-    "knockout": "3.4.1",
+    "knockout": "3.4.2",
     "requirejs": "2.2.0",
     "requirejs-text": "2.0.12",
-    "crossroads": "0.12.2",
     "signals": "1.0.0",
-    "autosize": "3.0.15",
     "taggle": "1.11.1"
   },
   "devDependencies": {
@@ -28,6 +28,6 @@
     "merge-stream": "1.0.x",
     "minimist": "1.2.x",
     "run-sequence": "1.1.x",
-    "typescript": "2.1.x"
+    "typescript": "2.4.x"
   }
 }

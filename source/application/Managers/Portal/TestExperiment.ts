@@ -6,8 +6,8 @@ class TestExperiment
 
 	constructor()
 	{
-		//this.Slides = [[this.CreateAudioInformationRetrieval()]];
-		this.Slides = [[this.CreateTaggingA()]];
+		this.Slides = [[this.CreateAudioInformationRetrieval()]];
+		//this.Slides = [[this.CreateTaggingA()]];
 	}
 
 	public CreateTaggingA():CockpitPortal.IQuestion

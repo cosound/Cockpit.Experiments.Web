@@ -121,7 +121,7 @@ interface HighchartsAxisOptions {
     offset?: number;
     opposite?: boolean;
     plotBands?: HighchartsPlotBands;
-    plotLines?: HighchartsPlotLines;
+    plotLines?: HighchartsPlotLines|HighchartsPlotLines[];
     reversed?: boolean;
     showEmpty?: boolean;
     showFirstLabel?: boolean;
@@ -196,7 +196,7 @@ interface HighchartsChartResetZoomButton {
 
 interface HighchartsChartOptions {
     alignTicks?: boolean;
-    animation?: HighchartsBoolOrAnimation;
+    animation?: HighchartsBoolOrAnimation|boolean;
     backgroundColor?: HighchartsColorOrGradient;
     borderColor?: string;
     borderRadius?: number;
@@ -964,7 +964,7 @@ interface HighchartsOptions {
     series?: HighchartsSeriesOptions[];
     subtitle?: HighchartsSubtitleOptions;
     title?: HighchartsTitleOptions;
-    tooltip?: HighchartsTooltipOptions;
+    tooltip?: HighchartsTooltipOptions|boolean;
     xAxis?: HighchartsAxisOptions;
     yAxis?: HighchartsAxisOptions;
 }
