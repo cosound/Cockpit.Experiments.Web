@@ -3,7 +3,7 @@ import CockpitPortal = require("Managers/Portal/Cockpit");
 import Notification = require("Managers/Notification");
 import DisposableComponent = require("Components/DisposableComponent");
 
-type SearchResult = {Name:string, ChannelName:string, Start:string, IsSelected:KnockoutComputed<boolean>, Select:()=>void}
+type SearchResult = {Name:string, ChannelName:string, Start:string, IsSelected:KnockoutComputed<boolean>, Select:()=>void, Data:any}
 
 export default class Search extends DisposableComponent
 {
@@ -25,7 +25,7 @@ export default class Search extends DisposableComponent
 
 	public Search():void
 	{
-		CockpitPortal.AudioInformation.Search().WithCallback(response => {
+		CockpitPortal.AudioInformation.Search(this.Query(),"/home/ubuntu/wp0x-store/00001_cosound/01000_custom/01010_speechtranscription/system/740_plugin/source/asrindexquery/published/31a13888-bc05-4a6f-aec5-36dab32ea576/query.sh").WithCallback(response => {
 			if(response.Error != null)
 			{
 				Notification.Error("Failed to search: " + response.Error.Message);
@@ -39,11 +39,12 @@ export default class Search extends DisposableComponent
 	private CreateSearchResult(result:any):SearchResult
 	{
 		let item:SearchResult = {
-			Name: result.Metadata.ProgrammeName.Value,
-			ChannelName: result.Metadata.ChannelHeaderLabel.Value,
-			Start: result.Metadata.PublicationStartTime.Value,
+			Name: result.Metadata.Fields.MyProgrammeName.Value,
+			ChannelName: result.Metadata.Fields.MyChannelHeaderLabel.Value,
+			Start: result.Metadata.Fields.MyPublicationStartDate.Value,
 			IsSelected: null,
-			Select: null
+			Select: null,
+			Data: result
 		};
 
 		item.IsSelected = this.PureComputed(() => this.Selected() == item);

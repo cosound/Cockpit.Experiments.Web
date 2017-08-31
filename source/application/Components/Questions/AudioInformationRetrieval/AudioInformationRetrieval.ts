@@ -48,7 +48,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		this.TimeLine.Position = this.Position;
 		this.HasSelected = this.PureComputed(()=> this.Search.Selected() != null);
 
-		this.Subscribe(this.Search.Selected, s => this.LoadAudio("f091ae97-3360-4a25-bc9d-ec05df6924a5"));
+		this.Subscribe(this.Search.Selected, s => this.LoadAudio(/.+\/mp3:(.+)\.mp3$/.exec(s.Data.Stimulus.URI)[1]));
 	}
 
 	private InitializeWayf():void

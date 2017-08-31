@@ -10,8 +10,8 @@
 		<div data-bind="visible: IsAuthenticated">
 			<div data-bind="with: Search">
 				<form data-bind="submit: Search">
-					<input class="form-control" type="text" data-bind="text: Query"/>
-					<button type="button" class="btn btn-primary" data-bind="text: ButtonLabel, click: Search"></button>
+					<input class="form-control" type="text" data-bind="textInput: Query"/>
+					<button type="submit" class="btn btn-primary" data-bind="text: ButtonLabel"></button>
 				</form>
 				<table class="table table-striped" data-bind="visible: HasSearched">
 					<thead>
