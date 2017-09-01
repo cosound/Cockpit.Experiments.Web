@@ -39,7 +39,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		let searchView = this.GetInstrument("SearchView");
 
 		this.SearchViewHeader = searchView["Header"]["Label"];
-		this.Search = new Search(searchView["Button"]["Label"]);
+		this.Search = new Search(searchView);
 		this.TimeLine = new TimeLine();
 		this.Rating = new Rating();
 
@@ -48,7 +48,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		this.TimeLine.Position = this.Position;
 		this.HasSelected = this.PureComputed(()=> this.Search.Selected() != null);
 
-		this.Subscribe(this.Search.Selected, s => this.LoadAudio(/.+\/mp3:(.+)\.mp3$/.exec(s.Data.Stimulus.URI)[1]));
+		this.Subscribe(this.Search.Selected, s => this.LoadAudio(s.Data.Stimulus.URI));
 	}
 
 	private InitializeWayf():void

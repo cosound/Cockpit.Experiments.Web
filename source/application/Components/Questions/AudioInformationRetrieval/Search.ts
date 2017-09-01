@@ -15,17 +15,20 @@ export default class Search extends DisposableComponent
 
 	public HasSearched:KnockoutComputed<boolean>;
 
-	constructor(searchButtonLabel:string)
+	private _functionValue:string;
+
+	constructor(searchView:any)
 	{
 		super();
-		this.ButtonLabel = searchButtonLabel;
+		this.ButtonLabel = searchView["Button"]["Label"];
+		this._functionValue = searchView.Query.Uri;
 
 		this.HasSearched = this.PureComputed(()=> this.Results().length != 0);
 	}
 
 	public Search():void
 	{
-		CockpitPortal.AudioInformation.Search(this.Query(),"/home/ubuntu/wp0x-store/00001_cosound/01000_custom/01010_speechtranscription/system/740_plugin/source/asrindexquery/published/31a13888-bc05-4a6f-aec5-36dab32ea576/query.sh").WithCallback(response => {
+		CockpitPortal.AudioInformation.Search(this.Query(),this._functionValue).WithCallback(response => {
 			if(response.Error != null)
 			{
 				Notification.Error("Failed to search: " + response.Error.Message);
