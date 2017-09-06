@@ -21,7 +21,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 	public Rating:Rating;
 
 	public TimeLineElement = knockout.observable<HTMLElement|null>(null);
-	public TimeLine:Timeline|null = null;
+	private _timeLine:Timeline|null = null;
 
 	public HasSelected:KnockoutComputed<boolean>;
 
@@ -52,18 +52,27 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 
 		this.Subscribe(this.Search.Selected, s => this.LoadAudio(s.Data.Stimulus.URI));
 
-		this.SubscribeUntilChange(this.TimeLineElement, e => {
+		this.SubscribeUntilChange(this.TimeLineElement, e => this.InitializeTimeline(e));
+	}
 
-			var data = [
-				{id: 1, content: 'item 1', start: '2013-04-20'},
-				{id: 2, content: 'item 2', start: '2013-04-14'},
-				{id: 3, content: 'item 3', start: '2013-04-18'},
-				{id: 4, content: 'item 4', start: '2013-04-16', end: '2013-04-19'},
-				{id: 5, content: 'item 5', start: '2013-04-25'},
-				{id: 6, content: 'item 6', start: '2013-04-27'}
-			];
+	private InitializeTimeline(element:HTMLElement):void
+	{
+		let data = [
+			{id: 1, content: 'item 1', start: '2013-04-20'},
+			{id: 2, content: 'item 2', start: '2013-04-14'},
+			{id: 3, content: 'item 3', start: '2013-04-18'},
+			{id: 4, content: 'item 4', start: '2013-04-16', end: '2013-04-19'},
+			{id: 5, content: 'item 5', start: '2013-04-25'},
+			{id: 6, content: 'item 6', start: '2013-04-27'}
+		];
 
-			this.TimeLine = new Timeline(e, data, {})
+		this._timeLine = new Timeline(element, data, {})
+
+		this._timeLine.addCustomTime(0, "PlayerPosition");
+
+		this.Position.subscribe(v =>
+		{
+			this._timeLine.setCustomTime(v, "PlayerPosition");
 		});
 	}
 
