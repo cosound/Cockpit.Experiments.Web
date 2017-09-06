@@ -1,33 +1,35 @@
 {
-  "name": "Cockpit.Experiments.Web",
-  "version": "2.0.0",
-  "private": true,
-  "repository": "git@github.com:cosound/Cockpit.Experiments.Web.git",
-  "author": "Jacob Poul Richardt",
-  "dependencies": {
-    "autosize": "3.0.15",
-    "crossroads": "0.12.2",
-    "jquery": "2.2.3",
-    "knockout": "3.4.2",
-    "requirejs": "2.2.0",
-    "requirejs-text": "2.0.12",
-    "signals": "1.0.0",
-    "taggle": "1.11.1"
-  },
-  "devDependencies": {
-    "del": "1.2.x",
-    "express": "4.13.x",
-    "gulp": "3.9.x",
-    "gulp-filter": "3.0.x",
-    "gulp-plumber": "1.1.x",
-    "gulp-rename": "1.2.x",
-    "gulp-replace": "0.5.x",
-    "gulp-stylus": "2.4.x",
-    "gulp-typescript": "3.1.x",
-    "gulp-uglify": "1.5.x",
-    "merge-stream": "1.0.x",
-    "minimist": "1.2.x",
-    "run-sequence": "1.1.x",
-    "typescript": "2.4.x"
-  }
+	"name": "Cockpit.Experiments.Web",
+	"version": "2.0.0",
+	"private": true,
+	"repository": "git@github.com:cosound/Cockpit.Experiments.Web.git",
+	"author": "Jacob Poul Richardt",
+	"dependencies": {
+		"autosize": "3.0.15",
+		"crossroads": "0.12.2",
+		"jquery": "2.2.3",
+		"knockout": "3.4.2",
+		"requirejs": "2.2.0",
+		"requirejs-text": "2.0.12",
+		"signals": "1.0.0",
+		"taggle": "1.11.1",
+		"vis": "4.20.1"
+	},
+	"devDependencies": {
+		"del": "1.2.x",
+		"express": "4.13.x",
+		"gulp": "3.9.x",
+		"gulp-filter": "3.0.x",
+		"gulp-plumber": "1.1.x",
+		"gulp-rename": "1.2.x",
+		"gulp-replace": "0.5.x",
+		"gulp-stylus": "2.4.x",
+		"gulp-typescript": "3.1.x",
+		"gulp-uglify": "1.5.x",
+		"merge-stream": "1.0.x",
+		"minimist": "1.2.x",
+		"run-sequence": "1.1.x",
+		"typescript": "2.4.x",
+		"@types/vis": "4.18.4"
+	}
 }

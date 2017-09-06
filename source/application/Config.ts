@@ -11,6 +11,7 @@
 /// <reference path="../../TypeScriptDefinitions/SoundManager.d.ts" />
 /// <reference path="../../TypeScriptDefinitions/videojs.d.ts" />
 /// <reference path="../../TypeScriptDefinitions/taggle.d.ts" />
+/// <reference path="../../TypeScriptDefinitions/vis.d.ts" />
 
 declare module "PortalClient" { export = CHAOS.Portal.Client }
 declare var CacheBuster: number;
@@ -31,6 +32,7 @@ requirejs.config({
 		"crypto-js": "../lib/crypto-js/md5",
 		soundmanager2: "../lib/soundmanager2/script/soundmanager2-nodebug-jsmin",
 		Taggle: "../lib/taggle/taggle",
+		vis: "../lib/vis/vis.min",
 	},
 	map: {
 		"*": {
@@ -69,6 +71,11 @@ requirejs.config({
 		},
 		Taggle: {
 			deps: ["css!../lib/taggle/taggle"]
+		},
+		vis: {
+			deps: [
+				"css!../lib/vis/vis.min"
+			]
 		}
 	},
 	deps: ["Main", "bootstrap", "css!Style/default", "KnockoutBindings/KnockoutBindings"],
