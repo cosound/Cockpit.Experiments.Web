@@ -34,7 +34,6 @@ export default class Search extends DisposableComponent
 				Notification.Error("Failed to search: " + response.Error.Message);
 				return;
 			}
-			console.log(response.Body.Results[0]);
 			this.Results.push(...response.Body.Results.map(r => this.CreateSearchResult(r)));
 		});
 	}

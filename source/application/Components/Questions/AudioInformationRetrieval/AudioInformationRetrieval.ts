@@ -47,7 +47,10 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		this.TimeLine = new TimeLineHandler(this.Position, this.Duration);
 		this.HasSelected = this.PureComputed(()=> this.Search.Selected() != null);
 
-		this.Subscribe(this.Search.Selected, s => this.LoadAudio(s.Data.Stimulus.URI));
+		this.Subscribe(this.Search.Selected, s => {
+			this.LoadAudio(s.Data.Stimulus.URI);
+			this.TimeLine.LoadData(s.Data.Segments);
+		});
 	}
 
 	private InitializeWayf():void
