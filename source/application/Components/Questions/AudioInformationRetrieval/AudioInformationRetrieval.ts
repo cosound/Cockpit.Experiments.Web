@@ -1,15 +1,12 @@
 import knockout = require("knockout");
-import CockpitPortal = require("Managers/Portal/Cockpit");
-import Notification = require("Managers/Notification");
-import Configuration = require("Managers/Configuration");
 import QuestionModel = require("Models/Question");
 import QuestionBase = require("Components/Questions/QuestionBase");
 import WayfAuthenticator from "Components/Questions/AudioInformationRetrieval/WayfAuthenticator";
 import Search from "Components/Questions/AudioInformationRetrieval/Search";
-import TimeLine from "Components/Questions/AudioInformationRetrieval/TimeLine";
 import Rating from "Components/Questions/AudioInformationRetrieval/Rating";
+import TimeLineHandler from "Components/Questions/AudioInformationRetrieval/TimeLineHandler";
 import Audio from "Utility/Audio";
-import {Timeline} from "vis";
+
 
 type Selection = {Identifier:string};
 
@@ -19,9 +16,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 
 	public Search:Search;
 	public Rating:Rating;
-
-	public TimeLineElement = knockout.observable<HTMLElement|null>(null);
-	private _timeLine:Timeline|null = null;
+	public TimeLine:TimeLineHandler;
 
 	public HasSelected:KnockoutComputed<boolean>;
 
@@ -31,6 +26,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 	private _wayfAuthenticator:WayfAuthenticator;
 
 	public Position:KnockoutComputed<number>;
+	public Duration:KnockoutComputed<number>;
 	private _audio = knockout.observable<Audio>();
 
 	constructor(question: QuestionModel)
@@ -46,34 +42,12 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		this.Rating = new Rating();
 
 		this.Position = this.PureComputed(() => this._audio() != null ? this._audio().Position() : 0);
-		/*this.TimeLine.Length = this.PureComputed(() => this._audio() != null ? this._audio().Duration() : 1);
-		this.TimeLine.Position = this.Position;*/
+		this.Duration = this.PureComputed(() => this._audio() != null ? this._audio().Duration() : 0);
+
+		this.TimeLine = new TimeLineHandler(this.Position, this.Duration);
 		this.HasSelected = this.PureComputed(()=> this.Search.Selected() != null);
 
 		this.Subscribe(this.Search.Selected, s => this.LoadAudio(s.Data.Stimulus.URI));
-
-		this.SubscribeUntilChange(this.TimeLineElement, e => this.InitializeTimeline(e));
-	}
-
-	private InitializeTimeline(element:HTMLElement):void
-	{
-		let data = [
-			{id: 1, content: 'item 1', start: '2013-04-20'},
-			{id: 2, content: 'item 2', start: '2013-04-14'},
-			{id: 3, content: 'item 3', start: '2013-04-18'},
-			{id: 4, content: 'item 4', start: '2013-04-16', end: '2013-04-19'},
-			{id: 5, content: 'item 5', start: '2013-04-25'},
-			{id: 6, content: 'item 6', start: '2013-04-27'}
-		];
-
-		this._timeLine = new Timeline(element, data, {})
-
-		this._timeLine.addCustomTime(0, "PlayerPosition");
-
-		this.Position.subscribe(v =>
-		{
-			this._timeLine.setCustomTime(v, "PlayerPosition");
-		});
 	}
 
 	private InitializeWayf():void
@@ -97,7 +71,6 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 			this._audio().Volume(10);
 
 			this.AddAction(this._audio().IsReady, () => {
-				//this.TimeLine.Initialize();
 				this._audio().Play();
 			});
 		});
