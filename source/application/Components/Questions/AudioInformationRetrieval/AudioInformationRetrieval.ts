@@ -27,7 +27,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 
 	public Position:KnockoutComputed<number>;
 	public Duration:KnockoutComputed<number>;
-	private _audio = knockout.observable<Audio>();
+	private Audio = knockout.observable<Audio>();
 
 	constructor(question: QuestionModel)
 	{
@@ -41,8 +41,8 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		this.Search = new Search(searchView);
 		this.Rating = new Rating();
 
-		this.Position = this.PureComputed(() => this._audio() != null ? this._audio().Position() : 0);
-		this.Duration = this.PureComputed(() => this._audio() != null ? this._audio().Duration() : 0);
+		this.Position = this.PureComputed(() => this.Audio() != null ? this.Audio().Position() : 0);
+		this.Duration = this.PureComputed(() => this.Audio() != null ? this.Audio().Duration() : 0);
 
 		this.TimeLine = new TimeLineHandler(this.Position, this.Duration);
 		this.HasSelected = this.PureComputed(()=> this.Search.Selected() != null);
@@ -70,11 +70,14 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 	private LoadAudio(assetGuid:string):void
 	{
 		this._wayfAuthenticator.GetAsset(assetGuid, asset => {
-			this._audio(new Audio(asset.Files[0].Destinations[0].Url));
-			this._audio().Volume(10);
+			if(this.Audio() != null)
+				this.Audio().Dispose();
 
-			this.AddAction(this._audio().IsReady, () => {
-				this._audio().Play();
+			this.Audio(new Audio(asset.Files[0].Destinations[0].Url));
+			this.Audio().Volume(10);
+
+			this.AddAction(this.Audio().IsReady, () => {
+				this.Audio().Play();
 			});
 		});
 	}
