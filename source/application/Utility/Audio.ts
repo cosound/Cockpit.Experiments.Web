@@ -51,7 +51,7 @@ export default class Audio
 		let wasOk = Audio.SoundManager.ok();
 
 		Audio.SoundManager.setup({
-			url: "." + window.location.pathname + "lib/soundmanager2/swf/",
+			url: window.location.pathname + "lib/soundmanager2/swf/",
 			preferFlash: true,
 			flashVersion: 9,
 			debugMode: false,
