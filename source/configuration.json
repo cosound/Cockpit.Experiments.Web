@@ -1,5 +1,5 @@
 {
   "PortalPath": "{PortalPath}",
-  "LarmPortalPath": "http://api.prod.larm.fm",
+  "LarmPortalPath": "https://api.prod.larm.fm",
   "WayfPath": "https://wayf.larm.fm"
 }
