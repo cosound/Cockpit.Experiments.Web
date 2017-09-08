@@ -13,7 +13,8 @@
 		"requirejs-text": "2.0.12",
 		"signals": "1.0.0",
 		"taggle": "1.11.1",
-		"vis": "4.20.1"
+		"vis": "4.20.1",
+		"moment": "2.18.1"
 	},
 	"devDependencies": {
 		"del": "1.2.x",

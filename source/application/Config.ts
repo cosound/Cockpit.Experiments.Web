@@ -12,6 +12,7 @@
 /// <reference path="../../TypeScriptDefinitions/videojs.d.ts" />
 /// <reference path="../../TypeScriptDefinitions/taggle.d.ts" />
 /// <reference path="../../TypeScriptDefinitions/vis.d.ts" />
+/// <reference path="../../TypeScriptDefinitions/moment.d.ts" />
 
 declare module "PortalClient" { export = CHAOS.Portal.Client }
 declare var CacheBuster: number;
@@ -33,6 +34,7 @@ requirejs.config({
 		soundmanager2: "../lib/soundmanager2/script/soundmanager2-nodebug-jsmin",
 		Taggle: "../lib/taggle/taggle",
 		vis: "../lib/vis/vis.min",
+		moment: "../lib/moment/moment.min",
 	},
 	map: {
 		"*": {

@@ -1,4 +1,5 @@
 import knockout = require("knockout");
+import moment = require("moment");
 import {DataSet, DataItem, Timeline, TimelineOptions} from "vis";
 import DisposableComponent = require("Components/DisposableComponent");
 
@@ -30,14 +31,16 @@ export default class TimeLineHandler extends DisposableComponent
 	{
 		this._data.clear();
 
+		console.log(this.CreateSegment(segments[0]));
+
 		this._data.add(segments.map(s => this.CreateSegment(s)));
 	}
 
 	private CreateSegment(data:any):DataItem
 	{
 		return {
-			start: data.StartTime,
-			end: data.EndTime,
+			start: moment("1970-01-01T" + data.StartTime + "Z"),
+			end: moment("1970-01-01T" + data.EndTime + "Z"),
 			content: this.GetContent(data)
 		}
 	}
@@ -63,6 +66,7 @@ export default class TimeLineHandler extends DisposableComponent
 			showCurrentTime: false,
 			showMajorLabels: false,
 			snap: null,
+			moment: (date: Date) => moment(date).utc(),
 			format: {
 				minorLabels: {
 					millisecond: "mm:ss.S",
