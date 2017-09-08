@@ -57,9 +57,12 @@ export default class TimeLineHandler extends DisposableComponent
 	{
 		this._options = {
 			min: 0,
-			max: this.duration(),
+			max: 60 * 60 * 30,
+			start: 0,
+			end: 60 * 60 * 30,
 			showCurrentTime: false,
 			showMajorLabels: false,
+			snap: null,
 			format: {
 				minorLabels: {
 					millisecond: "mm:ss.S",
@@ -80,11 +83,16 @@ export default class TimeLineHandler extends DisposableComponent
 		if(this.Element() == null || this.duration() == 0)
 			return;
 
-		console.log("Test")
-
 		this._options.max = this.duration();
+		this._options.end = this.duration();
 
-		this._timeLine = new Timeline(this.Element(), this._data, this._options);
+		try {
+			this._timeLine = new Timeline(this.Element(), this._data, this._options);
+		}
+		catch (error)
+		{
+			console.log(error)
+		}
 
 		this._timeLine.addCustomTime(0, "PlayerPosition");
 		this.position.subscribe(v =>
@@ -96,6 +104,7 @@ export default class TimeLineHandler extends DisposableComponent
 	private UpdateDuration():void
 	{
 		this._options.max = this.duration();
+		this._options.end = this.duration();
 		this._timeLine.setOptions(this._options)
 	}
 }

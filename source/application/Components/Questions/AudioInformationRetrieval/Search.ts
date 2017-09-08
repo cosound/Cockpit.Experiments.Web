@@ -9,7 +9,7 @@ export default class Search extends DisposableComponent
 {
 	public ButtonLabel:string;
 
-	public Query = knockout.observable("");
+	public Query = knockout.observable("def");
 	public Results = knockout.observableArray<SearchResult>();
 	public Selected = knockout.observable<SearchResult>();
 
