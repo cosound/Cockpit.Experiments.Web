@@ -31,8 +31,6 @@ export default class TimeLineHandler extends DisposableComponent
 	{
 		this._data.clear();
 
-		console.log(this.CreateSegment(segments[0]));
-
 		this._data.add(segments.map(s => this.CreateSegment(s)));
 	}
 
