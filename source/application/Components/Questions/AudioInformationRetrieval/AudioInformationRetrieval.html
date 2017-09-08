@@ -41,8 +41,16 @@
 					<span data-bind="visible: IsPlaying">Pause</span>
 				</button>
 			</div>
-			<div>
-
+			<div class="segmentList" data-bind="with: SegmentList">
+				<table>
+					<tbody data-bind="foreach: Segments">
+						<tr>
+							<td data-bind="text:StartTime"></td>
+							<td data-bind="text:EndTime"></td>
+							<td data-bind="text:Content"></td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 			<!--<div class="row" data-bind="with: Rating, visible: HasSelected">
 				<div class="Scale col-xs-12" data-bind="foreach: Items">

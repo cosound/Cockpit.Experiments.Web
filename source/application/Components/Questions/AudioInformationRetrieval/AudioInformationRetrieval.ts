@@ -5,6 +5,7 @@ import WayfAuthenticator from "Components/Questions/AudioInformationRetrieval/Wa
 import Search from "Components/Questions/AudioInformationRetrieval/Search";
 import Rating from "Components/Questions/AudioInformationRetrieval/Rating";
 import TimeLineHandler from "Components/Questions/AudioInformationRetrieval/TimeLineHandler";
+import SegmentList from "Components/Questions/AudioInformationRetrieval/SegmentList";
 import Audio from "Utility/Audio";
 
 
@@ -17,6 +18,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 	public Search:Search;
 	public Rating:Rating;
 	public TimeLine:TimeLineHandler;
+	public SegmentList:SegmentList;
 
 	public HasSelected:KnockoutComputed<boolean>;
 
@@ -45,11 +47,13 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		this.Duration = this.PureComputed(() => this.Audio() != null ? this.Audio().Duration() : 0);
 
 		this.TimeLine = new TimeLineHandler(this.Position, this.Duration);
+		this.SegmentList = new SegmentList();
 		this.HasSelected = this.PureComputed(()=> this.Search.Selected() != null);
 
 		this.Subscribe(this.Search.Selected, s => {
 			this.LoadAudio(s.Data.Stimulus.URI);
 			this.TimeLine.LoadData(s.Data.Segments);
+			this.SegmentList.LoadData(s.Data.Segments);
 		});
 	}
 
