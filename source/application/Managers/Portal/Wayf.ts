@@ -15,7 +15,7 @@ class Wayf
 
 	public Login(callback:(success:boolean, notApproved:boolean)=>void, serviceCaller?: IServiceCaller):void
 	{
-		let callbackUrl = window.location.protocol + "//" + window.location.host + "/" + window.location.pathname + "/WayfCallback.html";
+		let callbackUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "WayfCallback.html";
 		let wayfInfo = PortalClient.Wayf.LogIn(Configuration.WayfPath, callbackUrl, serviceCaller);
 		let listener = (event:any) =>
 		{
