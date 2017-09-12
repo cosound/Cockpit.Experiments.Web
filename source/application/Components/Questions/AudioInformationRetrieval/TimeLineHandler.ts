@@ -1,7 +1,8 @@
 import knockout = require("knockout");
 import moment = require("moment");
-import {DataSet, DataItem, Timeline, TimelineOptions} from "vis";
+import {DataSet, DataItem, Timeline, TimelineOptions, DataGroup} from "vis";
 import DisposableComponent = require("Components/DisposableComponent");
+import CockpitPortal = require("Managers/Portal/Cockpit");
 
 export default class TimeLineHandler extends DisposableComponent
 {
@@ -10,6 +11,7 @@ export default class TimeLineHandler extends DisposableComponent
 	private _timeLine:Timeline|null = null;
 	private _options:TimelineOptions|null = null;
 	private _data:DataSet<DataItem>|null = null;
+	private _groups:DataGroup[] = [];
 
 	constructor(private position:KnockoutComputed<number>, private duration:KnockoutComputed<number>)
 	{
@@ -27,20 +29,48 @@ export default class TimeLineHandler extends DisposableComponent
 		});
 	}
 
-	public LoadData(segments:any[]):void
+	public LoadData(segments:CockpitPortal.IAudioInformationSegment[]):void
 	{
 		this._data.clear();
 
 		this._data.add(segments.map(s => this.CreateSegment(s)));
+
+		this.UpdateGroups();
 	}
 
-	private CreateSegment(data:any):DataItem
+	private CreateSegment(data:CockpitPortal.IAudioInformationSegment):DataItem
 	{
 		return {
 			start: moment("1970-01-01T" + data.StartTime + "Z"),
 			end: moment("1970-01-01T" + data.EndTime + "Z"),
-			content: this.GetContent(data)
+			content: this.GetContent(data),
+			group: data.CaterogyId
 		}
+	}
+
+	private UpdateGroups():void
+	{
+		this._groups = [];
+
+		if(this._data != null)
+		{
+			const groups:any = {};
+
+			this._data.get().forEach(data => {
+				if(groups.hasOwnProperty(data.group))
+					return;
+
+				groups[data.group] = true;
+
+				this._groups.push({
+					id: data.group,
+					content: "gruppe " + data.group
+				});
+			});
+		}
+
+		if(this._timeLine != null)
+			this._timeLine.setGroups(this._groups);
 	}
 
 	private GetContent(data:any):string
@@ -89,7 +119,7 @@ export default class TimeLineHandler extends DisposableComponent
 		this._options.end = this.duration();
 
 		try {
-			this._timeLine = new Timeline(this.Element(), this._data, this._options);
+			this._timeLine = new Timeline(this.Element(), this._data, this._groups, this._options);
 		}
 		catch (error)
 		{

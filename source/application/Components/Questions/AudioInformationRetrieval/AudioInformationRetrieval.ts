@@ -8,7 +8,6 @@ import TimeLineHandler from "Components/Questions/AudioInformationRetrieval/Time
 import SegmentList from "Components/Questions/AudioInformationRetrieval/SegmentList";
 import Audio from "Utility/Audio";
 
-
 type Selection = {Identifier:string};
 
 class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>

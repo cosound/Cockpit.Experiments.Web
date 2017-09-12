@@ -55,13 +55,42 @@ export class Answer
 
 export class AudioInformation
 {
-	public static Search(argumentsValue:string, functionValue:string, serviceCaller: CHAOS.Portal.Client.IServiceCaller = null): CHAOS.Portal.Client.ICallState<CHAOS.Portal.Client.IPagedPortalResult<any>>
+	public static Search(argumentsValue:string, functionValue:string, serviceCaller: CHAOS.Portal.Client.IServiceCaller = null): CHAOS.Portal.Client.ICallState<CHAOS.Portal.Client.IPagedPortalResult<IAudioInformation>>
 	{
 		if (serviceCaller == null)
 			serviceCaller = PortalClient.ServiceCallerService.GetDefaultCaller();
 
 		return serviceCaller.CallService("AudioInformation/Search", PortalClient.HttpMethod.Get, {"arguments": argumentsValue, "function": functionValue}, false);
 	}
+}
+
+export interface IAudioInformation
+{
+	Id: string;
+	Index: string;
+	Stimulus: IAudioInformationStimulus;
+	Metadata: IAudioInformationMetadata;
+	Segments: IAudioInformationSegment[];
+}
+
+export interface IAudioInformationStimulus
+{
+	URI: string;
+}
+
+export interface IAudioInformationMetadata
+{
+	SchemaId: string;
+	Fields: {[key:string]: {Value:string}};
+}
+
+export interface IAudioInformationSegment
+{
+	CaterogyId : string;
+	StartTime: string;
+	EndTime: string;
+	ColorGroup: string;
+	Metadata: IAudioInformationMetadata;
 }
 
 export interface IExperiment

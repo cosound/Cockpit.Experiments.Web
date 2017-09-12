@@ -29,8 +29,6 @@ class Segment
 		this.StartTime = data.StartTime;
 		this.EndTime = data.EndTime;
 		this.Content = this.GetContent(data);
-
-		console.log(data);
 	}
 
 	private GetContent(data:any):string
