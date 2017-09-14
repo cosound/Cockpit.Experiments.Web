@@ -5,26 +5,29 @@ type Item = { Label:string; Id:string; };
 
 export default class Rating extends DisposableComponent
 {
+	public Header:string;
 	public Name:string;
 	public Items: Item[] = [];
 	public Answer = knockout.observable<string>(null);
-	public Selected = knockout.observable<Item>(null);
+	public Selected = knockout.observable<string>(null);
 	public CanAnswer = knockout.observable(true);
 
-	constructor()
+	constructor(data:any)
 	{
 		super();
 		this.Name = new Date().getTime().toString();
+		this.Header = data.Components.Heading;
+		const items =  data.Components.Likert.Items.Item;
 
-		for(let i = 1; i <= 9; i++)
-			this.Items.push(this.CreateItem(i.toString()));
+		for(let i = 0; i < items.length; i++)
+			this.Items.push(this.CreateItem(items[i]));
 	}
 
-	public CreateItem(label:string):Item
+	public CreateItem(data:any):Item
 	{
 		return {
-			Id: this.Name + "_" + label,
-			Label: label
+			Id: data.Id,
+			Label: data.Label
 		};
 	}
 }

@@ -8,7 +8,7 @@ import TimeLineHandler from "Components/Questions/AudioInformationRetrieval/Time
 import SegmentList from "Components/Questions/AudioInformationRetrieval/SegmentList";
 import Audio from "Utility/Audio";
 
-type Selection = {Identifier:string};
+type Selection = {Id:string, Rating:string};
 
 class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 {
@@ -39,8 +39,8 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		let searchView = this.GetInstrument("SearchView");
 
 		this.SearchViewHeader = searchView["Header"]["Label"];
-		this.Search = new Search(searchView);
-		this.Rating = new Rating();
+		this.Search = new Search(searchView, q => this.AddEvent("Search", null, null, q));
+		this.Rating = new Rating(this.GetInstrument("ItemEvaluationView"));
 
 		this.Position = this.PureComputed(() => this.Audio() != null ? this.Audio().Position() : 0);
 		this.Duration = this.PureComputed(() => this.Audio() != null ? this.Audio().Duration() : 0);
@@ -53,7 +53,50 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 			this.LoadAudio(s.Data.Stimulus.URI);
 			this.TimeLine.LoadData(s.Data.Segments);
 			this.SegmentList.LoadData(s.Data.Segments);
+
+			this.Rating.Selected(this.GetRatingFromAnswer(s.Data.Id));
 		});
+
+		this.Subscribe(this.Rating.Selected, s => this.UpdateAnswerWithSelectionRating(this.Search.Selected().Data.Id, s));
+	}
+
+	private UpdateAnswerWithSelectionRating(selectionId:string, rating:string):void
+	{
+		let answer = this.GetAnswer();
+
+		if(answer.Selections == null || <any>answer.Selections == "")
+			answer.Selections = [];
+
+		for(let i = 0; i < answer.Selections.length; i++)
+		{
+			if(answer.Selections[i].Id !== selectionId)
+				continue;
+
+			answer.Selections[i].Rating = rating;
+			this.SetAnswer(answer);
+			return;
+		}
+
+		answer.Selections.push({Id: selectionId, Rating: rating});
+		this.SetAnswer(answer);
+	}
+
+	private GetRatingFromAnswer(selectionId:string):string
+	{
+		let answer = this.GetAnswer();
+
+		if(answer.Selections == null || <any>answer.Selections == "")
+			return null;
+
+		for(let i = 0; i < answer.Selections.length; i++)
+		{
+			if(answer.Selections[i].Id !== selectionId)
+				continue;
+
+			return answer.Selections[i].Rating;
+		}
+
+		return null;
 	}
 
 	private InitializeWayf():void

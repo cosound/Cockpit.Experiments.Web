@@ -16,18 +16,22 @@ export default class Search extends DisposableComponent
 	public HasSearched:KnockoutComputed<boolean>;
 
 	private _functionValue:string;
+	private _searchCallback:(query:string)=>void;
 
-	constructor(searchView:any)
+	constructor(searchView:any, searchCallback:(query:string)=>void)
 	{
 		super();
 		this.ButtonLabel = searchView["Button"]["Label"];
 		this._functionValue = searchView.Query.Uri;
+		this._searchCallback = searchCallback;
 
 		this.HasSearched = this.PureComputed(()=> this.Results().length != 0);
 	}
 
 	public Search():void
 	{
+		this._searchCallback(this.Query());
+
 		CockpitPortal.AudioInformation.Search(this.Query(),this._functionValue).WithCallback(response => {
 			if(response.Error != null)
 			{
