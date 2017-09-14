@@ -55,6 +55,8 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 			this.SegmentList.LoadData(s.Data.Segments);
 
 			this.Rating.Selected(this.GetRatingFromAnswer(s.Data.Id));
+
+			this.AddEvent("Result Selected", null, null, s.Data.Id);
 		});
 
 		this.Subscribe(this.Rating.Selected, s => this.UpdateAnswerWithSelectionRating(this.Search.Selected().Data.Id, s));
