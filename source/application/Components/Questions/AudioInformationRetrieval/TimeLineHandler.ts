@@ -4,6 +4,7 @@ import {DataSet, DataItem, Timeline, TimelineOptions, DataGroup} from "vis";
 import DisposableComponent = require("Components/DisposableComponent");
 import CockpitPortal = require("Managers/Portal/Cockpit");
 import MetadataExtractor from "Components/Questions/AudioInformationRetrieval/MetadataExtractor";
+import Notification = require("Managers/Notification");
 
 type TimeLineConfiguration = {Header:string,
 	Categories: {
@@ -138,13 +139,37 @@ export default class TimeLineHandler extends DisposableComponent
 		}
 		catch (error)
 		{
-			console.log(error)
+			Notification.Error("Error creating timeline: " + error);
+			return;
 		}
 
+		this.InitializePosition();
+	}
+
+	private InitializePosition()
+	{
 		this._timeLine.addCustomTime(0, "PlayerPosition");
+		
+		let isUpdatingPosition = false;
+		let isDraggingTime = false;
 		this.position.subscribe(v =>
 		{
+			if (isUpdatingPosition || isDraggingTime || v == null) return;
+			isUpdatingPosition = true;
 			this._timeLine.setCustomTime(v, "PlayerPosition");
+			isUpdatingPosition = false;
+		});
+		this._timeLine.on("timechanged", e =>
+		{
+			isDraggingTime = false;
+			if (isUpdatingPosition) return;
+			isUpdatingPosition = true;
+			this.position(e.time.getTime());
+			isUpdatingPosition = false;
+		});
+		this._timeLine.on("timechange", e =>
+		{
+			isDraggingTime = true;
 		});
 	}
 
