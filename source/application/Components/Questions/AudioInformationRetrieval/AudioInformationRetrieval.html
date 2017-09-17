@@ -10,8 +10,12 @@
 		<div data-bind="visible: IsAuthenticated">
 			<div data-bind="with: Search">
 				<form data-bind="submit: Search">
-					<input class="form-control" type="text" data-bind="textInput: Query"/>
-					<button type="submit" class="btn btn-primary" data-bind="text: ButtonLabel"></button>
+					<div class="input-group">
+						<input type="text" class="form-control" placeholder="Search..." data-bind="textInput: Query">
+						<span class="input-group-btn">
+							<button class="btn btn-primary" type="submit" data-bind="text: ButtonLabel"></button>
+						</span>
+					</div>
 				</form>
 				<table class="table table-striped" data-bind="visible: HasSearched">
 					<thead>
@@ -28,7 +32,7 @@
 						<td data-bind="text: ChannelName"></td>
 						<td data-bind="text: Start"></td>
 						<td>
-							<button type="button" class="btn btn-primary" data-bind="click: Select">Select</button>
+							<button type="button" class="btn btn-default" data-bind="click: Select">Select</button>
 						</td>
 					</tr>
 					</tbody>
@@ -38,10 +42,10 @@
 				<h3 data-bind="text: Header"></h3>
 				<div data-bind="Element: Element"></div>
 			</div>
-			<div data-bind="with: Audio()">
-				<button data-bind="click: TogglePlay">
-					<span data-bind="visible: !IsPlaying()">Play</span>
-					<span data-bind="visible: IsPlaying">Pause</span>
+			<div class="playerControls" data-bind="with: Audio()">
+				<button type="button" class="btn btn-primary" data-bind="click: TogglePlay">
+					<span data-bind="visible: !IsPlaying()" class="glyphicon glyphicon-play" aria-hidden="true"></span>
+					<span data-bind="visible: IsPlaying" class="glyphicon glyphicon-pause" aria-hidden="true"></span>
 				</button>
 			</div>
 			<div class="segmentList" data-bind="with: SegmentList">
