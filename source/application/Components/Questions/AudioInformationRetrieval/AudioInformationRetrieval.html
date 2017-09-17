@@ -43,11 +43,20 @@
 				<h3 data-bind="text: Header"></h3>
 				<div data-bind="Element: Element"></div>
 			</div>
-			<div class="playerControls" data-bind="with: Audio()">
+			<div class="playerControls" data-bind="with: Audio">
+				<!-- ko with: Audio() -->
 				<button type="button" class="btn btn-primary" data-bind="click: TogglePlay">
 					<span data-bind="visible: !IsPlaying()" class="glyphicon glyphicon-play" aria-hidden="true"></span>
 					<span data-bind="visible: IsPlaying" class="glyphicon glyphicon-pause" aria-hidden="true"></span>
 				</button>
+				<!-- /ko -->
+				<span class="time">
+					<span data-bind="text: PrettyPosition"></span> / <span data-bind="text: PrettyDuration"></span>
+				</span>
+				<!-- ko with: Audio() -->
+				<span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
+				<input type="range" min="0" max="100" step="1" data-bind="value: Volume, valueUpdate: 'input'" class="volume"/>
+				<!-- /ko -->
 			</div>
 			<div class="segmentList" data-bind="with: SegmentList">
 				<h3 data-bind="text: Header"></h3>

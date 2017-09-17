@@ -11,4 +11,15 @@ export default class Time
 	{
 		return moment(value).format("HH:mm:SS")
 	}
+
+	public static ToPrettyTimeFromMillieseconds(milliseconds: number): string
+	{
+		let date = new Date(milliseconds);
+		return `${this.GetTwoDigits(date.getUTCHours() + (date.getUTCDate() - 1) * 24) }:${this.GetTwoDigits(date.getUTCMinutes()) }:${this.GetTwoDigits(date.getUTCSeconds()) }`;
+	}
+
+	public static GetTwoDigits(value: number): string
+	{
+		return value < 10 ? "0" + value : value.toString();
+	}
 }
