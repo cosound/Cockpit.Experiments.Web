@@ -192,6 +192,7 @@ export default class Audio
 		options.onresume = updatePlayState;
 		options.onfinish = () =>
 		{
+			this.IsPlaying(false);
 			updatePlayState();
 			this.IsFinished(true);
 		};
