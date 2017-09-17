@@ -41,7 +41,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		this.Audio = new Audio(this._wayfAuthenticator);
 
 		this.TimeLine = new TimeLineHandler(this.Audio.Position, this.Audio.Duration, this.GetInstrument("PlayerView"), this._metadataExtractor);
-		this.SegmentList = new SegmentList(this.GetInstrument("SegmentListView"));
+		this.SegmentList = new SegmentList(this.GetInstrument("SegmentListView"), this._metadataExtractor);
 
 		this.InitializeSelected();
 	}

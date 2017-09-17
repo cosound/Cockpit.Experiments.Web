@@ -1,12 +1,13 @@
 import knockout = require("knockout");
 import DisposableComponent = require("Components/DisposableComponent");
+import MetadataExtractor from "Components/Questions/AudioInformationRetrieval/MetadataExtractor";
 
 export default class SegmentList extends DisposableComponent
 {
 	public Header:string;
 	public Segments = knockout.observableArray<Segment>();
 
-	constructor(data: any)
+	constructor(data: any, private metadataExtractor: MetadataExtractor)
 	{
 		super();
 
@@ -17,7 +18,7 @@ export default class SegmentList extends DisposableComponent
 	{
 		this.Segments.removeAll();
 
-		this.Segments.push(...segments.map(s => new Segment(s)));
+		this.Segments.push(...segments.map(s => new Segment(s, this.metadataExtractor)));
 	}
 }
 
@@ -27,21 +28,10 @@ class Segment
 	public EndTime:string;
 	public Content:string;
 
-	constructor(data:any)
+	constructor(data:any, metadataExtractor: MetadataExtractor)
 	{
 		this.StartTime = data.StartTime;
 		this.EndTime = data.EndTime;
-		this.Content = this.GetContent(data);
-	}
-
-	private GetContent(data:any):string
-	{
-		try {
-			return data.Metadata.Fields.MyTranscriptionAsString.Value
-		}
-		catch (error)
-		{
-			return "Unknown Format"
-		}
+		this.Content = metadataExtractor.GetHeader(data);
 	}
 }

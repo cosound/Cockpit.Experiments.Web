@@ -39,6 +39,19 @@
 				</table>
 			</div>
 			<!-- ko if: HasSelected -->
+			<div class="rating" data-bind="with: Rating">
+				<h3 data-bind="text: Header"></h3>
+				<div class="row">
+					<div class="Scale col-xs-12" data-bind="foreach: Items">
+						<label class="text-center" data-bind="css: {disabled: !$parent.CanAnswer()}, style: {width: (90 / $parent.Items.length) + '%'}">
+							<span class="Line"></span>
+							<input type="radio" data-bind="checked: $parent.Selected, attr: {name: $parent.Name}, value: Id, enable: $parent.CanAnswer" />
+							<br />
+							<span data-bind="html: Label"></span>
+						</label>
+					</div>
+				</div>
+			</div>
 			<div class="timeLine" data-bind="with: TimeLine">
 				<h3 data-bind="text: Header"></h3>
 				<div data-bind="Element: Element"></div>
@@ -60,7 +73,14 @@
 			</div>
 			<div class="segmentList" data-bind="with: SegmentList">
 				<h3 data-bind="text: Header"></h3>
-				<table>
+				<table class="table table-striped">
+					<thead>
+					<tr>
+						<th>Start</th>
+						<th>End</th>
+						<th>Label</th>
+					</tr>
+					</thead>
 					<tbody data-bind="foreach: Segments">
 						<tr>
 							<td data-bind="text:StartTime"></td>
@@ -70,20 +90,6 @@
 					</tbody>
 				</table>
 			</div>
-			<div class="rating" data-bind="with: Rating">
-				<h3 data-bind="text: Header"></h3>
-				<div class="row">
-					<div class="Scale col-xs-12" data-bind="foreach: Items">
-						<label class="text-center" data-bind="css: {disabled: !$parent.CanAnswer()}, style: {width: (90 / $parent.Items.length) + '%'}">
-							<span class="Line"></span>
-							<input type="radio" data-bind="checked: $parent.Selected, attr: {name: $parent.Name}, value: Id, enable: $parent.CanAnswer" />
-							<br />
-							<span data-bind="html: Label"></span>
-						</label>
-					</div>
-				</div>
-			</div>
-
 			<!-- /ko -->
 		</div>
 	</div>
