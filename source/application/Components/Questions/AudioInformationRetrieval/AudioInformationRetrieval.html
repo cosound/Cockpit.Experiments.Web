@@ -34,7 +34,10 @@
 					</tbody>
 				</table>
 			</div>
-			<div data-bind="Element: TimeLine.Element, visible: HasSelected"></div>
+			<div data-bind="visible: HasSelected, with: TimeLine">
+				<h3 data-bind="text: Header"></h3>
+				<div data-bind="Element: Element"></div>
+			</div>
 			<div data-bind="with: Audio()">
 				<button data-bind="click: TogglePlay">
 					<span data-bind="visible: !IsPlaying()">Play</span>

@@ -4,20 +4,32 @@ import {DataSet, DataItem, Timeline, TimelineOptions, DataGroup} from "vis";
 import DisposableComponent = require("Components/DisposableComponent");
 import CockpitPortal = require("Managers/Portal/Cockpit");
 
+type TimeLineConfiguration = {Header:string,
+	Categories: {
+	Category: {
+		Id:string,
+		Header:string
+	}[]
+}}
+
 export default class TimeLineHandler extends DisposableComponent
 {
+	public Header:string;
 	public Element = knockout.observable<HTMLElement|null>(null);
 
 	private _timeLine:Timeline|null = null;
 	private _options:TimelineOptions|null = null;
 	private _data:DataSet<DataItem>|null = null;
 	private _groups:DataGroup[] = [];
+	private _configuration:TimeLineConfiguration;
 
-	constructor(private position:KnockoutComputed<number>, private duration:KnockoutComputed<number>)
+	constructor(private position:KnockoutComputed<number>, private duration:KnockoutComputed<number>, configuration:TimeLineConfiguration)
 	{
 		super();
 
 		this._data = new DataSet([],{});
+		this._configuration = configuration;
+		this.Header = this._configuration.Header;
 		this.InitializeOptions();
 
 		this.SubscribeUntilChange(this.Element, () => this.Initialize());
@@ -62,9 +74,11 @@ export default class TimeLineHandler extends DisposableComponent
 
 				groups[data.group] = true;
 
+				const groupConfig = this._configuration.Categories.Category.filter(c => c.Id == data.group);
+
 				this._groups.push({
 					id: data.group,
-					content: "gruppe " + data.group
+					content: groupConfig.length != 0 ? groupConfig[0].Header : "Gruppe"
 				});
 			});
 		}

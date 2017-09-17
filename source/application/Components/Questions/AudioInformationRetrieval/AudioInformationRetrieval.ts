@@ -45,7 +45,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		this.Position = this.PureComputed(() => this.Audio() != null ? this.Audio().Position() : 0);
 		this.Duration = this.PureComputed(() => this.Audio() != null ? this.Audio().Duration() : 0);
 
-		this.TimeLine = new TimeLineHandler(this.Position, this.Duration);
+		this.TimeLine = new TimeLineHandler(this.Position, this.Duration, this.GetInstrument("PlayerView"));
 		this.SegmentList = new SegmentList();
 		this.HasSelected = this.PureComputed(()=> this.Search.Selected() != null);
 
