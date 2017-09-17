@@ -6,7 +6,7 @@
 		<div data-bind="visible: CanLogin">
 			<button class="btn btn-primary" data-bind="click: Login">Login via Wayf</button>
 		</div>
-		<div data-bind="visible: IsAuthenticated">
+		<div class="search" data-bind="visible: IsAuthenticated">
 			<div data-bind="with: Search">
 				<h3 data-bind="text: Header"></h3>
 				<form data-bind="submit: Search">
@@ -21,16 +21,16 @@
 					<thead>
 					<tr>
 						<th>Name</th>
-						<th>Channel</th>
-						<th>Time</th>
+						<th>Duration</th>
+						<th>Relevance</th>
 						<th></th>
 					</tr>
 					</thead>
 					<tbody data-bind="foreach: Results">
 					<tr data-bind="css: {success: IsSelected}">
 						<td data-bind="text: Name"></td>
-						<td data-bind="text: ChannelName"></td>
-						<td data-bind="text: Start"></td>
+						<td data-bind="text: Duration"></td>
+						<td data-bind="text: Relevance"></td>
 						<td>
 							<button type="button" class="btn btn-default" data-bind="click: Select">Select</button>
 						</td>

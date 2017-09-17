@@ -2,8 +2,9 @@ import knockout = require("knockout");
 import CockpitPortal = require("Managers/Portal/Cockpit");
 import Notification = require("Managers/Notification");
 import DisposableComponent = require("Components/DisposableComponent");
+import Time from "Utility/Time";
 
-type SearchResult = {Name:string, ChannelName:string, Start:string, IsSelected:KnockoutComputed<boolean>, Select:()=>void, Data: CockpitPortal.IAudioInformation}
+type SearchResult = {Name:string, ChannelName:string, Start:string, Duration:string, Relevance:string, IsSelected:KnockoutComputed<boolean>, Select:()=>void, Data: CockpitPortal.IAudioInformation}
 
 export default class Search extends DisposableComponent
 {
@@ -50,6 +51,8 @@ export default class Search extends DisposableComponent
 			Name: result.Metadata.Fields["MyProgrammeName"].Value,
 			ChannelName: result.Metadata.Fields["MyChannelHeaderLabel"].Value,
 			Start: result.Metadata.Fields["MyPublicationStartDate"].Value,
+			Duration: Time.ToPrettyTimeFromString(result.Metadata.Fields["MyPublicationDuration"].Value),
+			Relevance: result.Metadata.Fields["MyRelevance"].Value,
 			IsSelected: null,
 			Select: null,
 			Data: result
