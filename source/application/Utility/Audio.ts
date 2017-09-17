@@ -9,7 +9,7 @@ export default class Audio
 
 	public IsReady: KnockoutObservable<boolean> = knockout.observable(false);
 	public IsPlaying: KnockoutObservable<boolean> = knockout.observable(false);
-	public IsFinnished: KnockoutObservable<boolean> = knockout.observable(false);
+	public IsFinished: KnockoutObservable<boolean> = knockout.observable(false);
 	public Position: KnockoutObservable<number> = knockout.observable(0);
 	public Duration: KnockoutObservable<number> = knockout.observable(0);
 	public Volume: KnockoutObservable<number> = knockout.observable(100);
@@ -137,7 +137,7 @@ export default class Audio
 		let updatePlayState = withSound(() =>
 		{
 			this.IsPlaying(this._sound.playState === 1 && !this._sound.paused);
-			this.IsFinnished(false);
+			this.IsFinished(false);
 		});
 
 		options.onconnect = withSound(() =>this.IsReady(true));
@@ -193,7 +193,7 @@ export default class Audio
 		options.onfinish = () =>
 		{
 			updatePlayState();
-			this.IsFinnished(true);
+			this.IsFinished(true);
 		};
 	}
 

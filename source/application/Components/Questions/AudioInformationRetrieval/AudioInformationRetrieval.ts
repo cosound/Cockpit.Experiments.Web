@@ -13,8 +13,6 @@ type Selection = {Id:string, Rating:string};
 
 class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 {
-	public SearchViewHeader:string;
-
 	public Search:Search;
 	public Rating:Rating;
 	public TimeLine:TimeLineHandler;
@@ -40,22 +38,29 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 
 		this._metadataExtractor = new MetadataExtractor(this.GetInput("MetadataSchema").MetadataSchema);
 
-		let searchView = this.GetInstrument("SearchView");
-
-		this.SearchViewHeader = searchView["Header"]["Label"];
-		this.Search = new Search(searchView, q => this.AddEvent("Search", null, null, q));
+		this.Search = new Search(this.GetInstrument("SearchView"), q => this.AddEvent("Search", null, null, q));
 		this.Rating = new Rating(this.GetInstrument("ItemEvaluationView"));
 
+		this.InitializePlayer();
+
+		this.TimeLine = new TimeLineHandler(this.Position, this.Duration, this.GetInstrument("PlayerView"), this._metadataExtractor);
+		this.SegmentList = new SegmentList(this.GetInstrument("SegmentListView"));
+
+		this.InitializeSelected();
+	}
+
+	private InitializePlayer():void
+	{
 		this.Position = this.PureComputed(() => this.Audio() != null ? this.Audio().Position() : 0, v => {
 			if(this.Audio() != null)
 				this.Audio().Position(v);
 		});
 		this.Duration = this.PureComputed(() => this.Audio() != null ? this.Audio().Duration() : 0);
+	}
 
-		this.TimeLine = new TimeLineHandler(this.Position, this.Duration, this.GetInstrument("PlayerView"), this._metadataExtractor);
-		this.SegmentList = new SegmentList();
+	private InitializeSelected():void
+	{
 		this.HasSelected = this.PureComputed(()=> this.Search.Selected() != null);
-
 
 		this.Subscribe(this.Search.Selected, s => {
 			this.LoadAudio(s.Data.Stimulus.URI);

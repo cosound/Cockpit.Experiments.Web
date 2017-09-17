@@ -7,6 +7,7 @@ type SearchResult = {Name:string, ChannelName:string, Start:string, IsSelected:K
 
 export default class Search extends DisposableComponent
 {
+	public Header:string;
 	public ButtonLabel:string;
 
 	public Query = knockout.observable("def");
@@ -21,6 +22,7 @@ export default class Search extends DisposableComponent
 	constructor(searchView:any, searchCallback:(query:string)=>void)
 	{
 		super();
+		this.Header = searchView["Header"]["Label"];
 		this.ButtonLabel = searchView["Button"]["Label"];
 		this._functionValue = searchView.Query.Uri;
 		this._searchCallback = searchCallback;

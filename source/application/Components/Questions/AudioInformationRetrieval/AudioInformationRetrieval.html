@@ -1,5 +1,4 @@
 <div class="audioInformationRetrieval container-fluid">
-	<h3 data-bind="text: SearchViewHeader"></h3>
 	<div data-bind="visible: !IsLoginReady()">
 		Loading...
 	</div>
@@ -9,6 +8,7 @@
 		</div>
 		<div data-bind="visible: IsAuthenticated">
 			<div data-bind="with: Search">
+				<h3 data-bind="text: Header"></h3>
 				<form data-bind="submit: Search">
 					<div class="input-group">
 						<input type="text" class="form-control" placeholder="Search..." data-bind="textInput: Query">
@@ -38,7 +38,8 @@
 					</tbody>
 				</table>
 			</div>
-			<div data-bind="visible: HasSelected, with: TimeLine">
+			<!-- ko if: HasSelected -->
+			<div class="timeLine" data-bind="with: TimeLine">
 				<h3 data-bind="text: Header"></h3>
 				<div data-bind="Element: Element"></div>
 			</div>
@@ -49,6 +50,7 @@
 				</button>
 			</div>
 			<div class="segmentList" data-bind="with: SegmentList">
+				<h3 data-bind="text: Header"></h3>
 				<table>
 					<tbody data-bind="foreach: Segments">
 						<tr>
@@ -59,17 +61,21 @@
 					</tbody>
 				</table>
 			</div>
-			<div class="row" data-bind="with: Rating, visible: HasSelected">
+			<div class="rating" data-bind="with: Rating">
 				<h3 data-bind="text: Header"></h3>
-				<div class="Scale col-xs-12" data-bind="foreach: Items">
-					<label class="text-center" data-bind="css: {disabled: !$parent.CanAnswer()}, style: {width: (90 / $parent.Items.length) + '%'}">
-						<span class="Line"></span>
-						<input type="radio" data-bind="checked: $parent.Selected, attr: {name: $parent.Name}, value: Id, enable: $parent.CanAnswer" />
-						<br />
-						<span data-bind="html: Label"></span>
-					</label>
+				<div class="row">
+					<div class="Scale col-xs-12" data-bind="foreach: Items">
+						<label class="text-center" data-bind="css: {disabled: !$parent.CanAnswer()}, style: {width: (90 / $parent.Items.length) + '%'}">
+							<span class="Line"></span>
+							<input type="radio" data-bind="checked: $parent.Selected, attr: {name: $parent.Name}, value: Id, enable: $parent.CanAnswer" />
+							<br />
+							<span data-bind="html: Label"></span>
+						</label>
+					</div>
 				</div>
 			</div>
+
+			<!-- /ko -->
 		</div>
 	</div>
 </div>

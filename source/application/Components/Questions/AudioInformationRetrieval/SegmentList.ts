@@ -3,11 +3,14 @@ import DisposableComponent = require("Components/DisposableComponent");
 
 export default class SegmentList extends DisposableComponent
 {
+	public Header:string;
 	public Segments = knockout.observableArray<Segment>();
 
-	constructor()
+	constructor(data: any)
 	{
 		super();
+
+		this.Header = data.Header;
 	}
 
 	public LoadData(segments: any[])
