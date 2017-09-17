@@ -3,6 +3,7 @@ import moment = require("moment");
 import {DataSet, DataItem, Timeline, TimelineOptions, DataGroup} from "vis";
 import DisposableComponent = require("Components/DisposableComponent");
 import CockpitPortal = require("Managers/Portal/Cockpit");
+import MetadataExtractor from "Components/Questions/AudioInformationRetrieval/MetadataExtractor";
 
 type TimeLineConfiguration = {Header:string,
 	Categories: {
@@ -23,7 +24,7 @@ export default class TimeLineHandler extends DisposableComponent
 	private _groups:DataGroup[] = [];
 	private _configuration:TimeLineConfiguration;
 
-	constructor(private position:KnockoutComputed<number>, private duration:KnockoutComputed<number>, configuration:TimeLineConfiguration)
+	constructor(private position: KnockoutComputed<number>, private duration: KnockoutComputed<number>, configuration: TimeLineConfiguration, private metadataExtractor: MetadataExtractor)
 	{
 		super();
 
@@ -55,7 +56,7 @@ export default class TimeLineHandler extends DisposableComponent
 		return {
 			start: moment("1970-01-01T" + data.StartTime + "Z"),
 			end: moment("1970-01-01T" + data.EndTime + "Z"),
-			content: this.GetContent(data),
+			content: this.metadataExtractor.GetHeader(data),
 			group: data.CaterogyId
 		}
 	}

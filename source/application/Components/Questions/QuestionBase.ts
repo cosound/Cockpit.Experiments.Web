@@ -18,7 +18,7 @@ class QuestionsBase<T> extends DisposableComponent implements IQuestionViewModel
 		this.Model.RequiresInput = requiresInput;
 		this.HasAnswer = knockout.computed(() => this.Model.Answer() != null && this.HasNoneEventsProperty(this.GetAnswer()));
 
-		var answer = this.Model.Answer();
+		const answer = this.Model.Answer();
 		this._events = answer != null && answer.Events ? answer.Events : [];
 
 		setTimeout(() =>
@@ -44,7 +44,7 @@ class QuestionsBase<T> extends DisposableComponent implements IQuestionViewModel
 
 	private HasNoneEventsProperty(answer: T):boolean
 	{
-		for (var key in answer)
+		for (let key in answer)
 			if (key !== "Events") return true;
 
 		return false;
@@ -67,12 +67,24 @@ class QuestionsBase<T> extends DisposableComponent implements IQuestionViewModel
 
 	protected GetInputs():any[]
 	{
-		return this.Model === null || this.Model.Input === null ? new Array<any>() : this.Model.Input;
+		return this.Model === null || this.Model.Input === null ? [] : this.Model.Input;
+	}
+
+	protected GetInput(key:string):any
+	{
+		const inputs = this.GetInputs();
+
+		for (let i = 0; i < inputs.length; i++)
+		{
+			if (inputs[i].hasOwnProperty(key)) return inputs[i][key];
+		}
+
+		throw new Error(`${key} object not found in input`);
 	}
 
 	protected GetInstrumentFormatted(key: string): string
 	{
-		var instrument = this.GetInstrument(key);
+		const instrument = this.GetInstrument(key);
 
 		if (instrument === null || instrument === undefined) return instrument;
 		if (typeof instrument === "string") return this.GetFormatted(instrument);
@@ -82,9 +94,9 @@ class QuestionsBase<T> extends DisposableComponent implements IQuestionViewModel
 
 	private GetIntrumentObject():{ [key:string]:any }
 	{
-		var inputs = this.GetInputs();
+		const inputs = this.GetInputs();
 
-		for (var i = 0; i < inputs.length; i++)
+		for (let i = 0; i < inputs.length; i++)
 		{
 			if (inputs[i].Instrument) return inputs[i].Instrument;
 		}

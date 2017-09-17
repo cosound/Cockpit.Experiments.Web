@@ -6,6 +6,7 @@ import Search from "Components/Questions/AudioInformationRetrieval/Search";
 import Rating from "Components/Questions/AudioInformationRetrieval/Rating";
 import TimeLineHandler from "Components/Questions/AudioInformationRetrieval/TimeLineHandler";
 import SegmentList from "Components/Questions/AudioInformationRetrieval/SegmentList";
+import MetadataExtractor from "Components/Questions/AudioInformationRetrieval/MetadataExtractor";
 import Audio from "Utility/Audio";
 
 type Selection = {Id:string, Rating:string};
@@ -28,13 +29,16 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 
 	public Position:KnockoutComputed<number>;
 	public Duration:KnockoutComputed<number>;
-	private Audio = knockout.observable<Audio>();
+	public Audio = knockout.observable<Audio>();
+	private _metadataExtractor:MetadataExtractor;
 
 	constructor(question: QuestionModel)
 	{
 		super(question);
 
 		this.InitializeWayf();
+
+		this._metadataExtractor = new MetadataExtractor(this.GetInput("MetadataSchema").MetadataSchema);
 
 		let searchView = this.GetInstrument("SearchView");
 
@@ -45,9 +49,10 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		this.Position = this.PureComputed(() => this.Audio() != null ? this.Audio().Position() : 0);
 		this.Duration = this.PureComputed(() => this.Audio() != null ? this.Audio().Duration() : 0);
 
-		this.TimeLine = new TimeLineHandler(this.Position, this.Duration, this.GetInstrument("PlayerView"));
+		this.TimeLine = new TimeLineHandler(this.Position, this.Duration, this.GetInstrument("PlayerView"), this._metadataExtractor);
 		this.SegmentList = new SegmentList();
 		this.HasSelected = this.PureComputed(()=> this.Search.Selected() != null);
+
 
 		this.Subscribe(this.Search.Selected, s => {
 			this.LoadAudio(s.Data.Stimulus.URI);
