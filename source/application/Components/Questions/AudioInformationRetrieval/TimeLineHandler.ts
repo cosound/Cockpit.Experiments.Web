@@ -24,8 +24,9 @@ export default class TimeLineHandler extends DisposableComponent
 	private _data:DataSet<DataItem>|null = null;
 	private _groups:DataGroup[] = [];
 	private _configuration:TimeLineConfiguration;
+	private _segments:CockpitPortal.IAudioInformationSegment[];
 
-	constructor(private position: KnockoutComputed<number>, private duration: KnockoutComputed<number>, configuration: TimeLineConfiguration, private metadataExtractor: MetadataExtractor)
+	constructor(private position: KnockoutComputed<number>, private duration: KnockoutComputed<number>, configuration: TimeLineConfiguration, private metadataExtractor: MetadataExtractor, private selectedSegment:KnockoutObservable<CockpitPortal.IAudioInformationSegment>)
 	{
 		super();
 
@@ -33,32 +34,29 @@ export default class TimeLineHandler extends DisposableComponent
 		this._configuration = configuration;
 		this.Header = this._configuration.Header;
 		this.InitializeOptions();
+		this.InitializeDuration();
 
 		this.SubscribeUntilChange(this.Element, () => this.Initialize());
-		this.Subscribe(this.duration, () => {
-			if(this._timeLine == null)
-				this.Initialize();
-			else
-				this.UpdateDuration();
-		});
 	}
 
 	public LoadData(segments:CockpitPortal.IAudioInformationSegment[]):void
 	{
 		this._data.clear();
+		this._segments = segments;
 
-		this._data.add(segments.map(s => this.CreateSegment(s)));
+		this._data.add(segments.map((s, i) => this.CreateSegment(s, i)));
 
 		this.UpdateGroups();
 	}
 
-	private CreateSegment(data:CockpitPortal.IAudioInformationSegment):DataItem
+	private CreateSegment(data:CockpitPortal.IAudioInformationSegment, id:number):DataItem
 	{
 		return {
+			id: id,
 			start: moment("1970-01-01T" + data.StartTime + "Z"),
 			end: moment("1970-01-01T" + data.EndTime + "Z"),
 			content: this.metadataExtractor.GetHeader(data),
-			group: data.CaterogyId
+			group: data.CaterogyId,
 		}
 	}
 
@@ -126,6 +124,31 @@ export default class TimeLineHandler extends DisposableComponent
 		};
 	}
 
+	private InitializeDuration():void
+	{
+		this.Subscribe(this.duration, () => {
+			if(this._timeLine == null)
+				this.Initialize();
+			else
+				this.UpdateDuration();
+		});
+	}
+
+	private InitializeSelection():void
+	{
+		this._timeLine.on("select", (e) =>
+		{
+			if (e.items.length === 1)
+				this.selectedSegment(this._segments[e.items[0]]);
+			else
+				this.selectedSegment(null);
+		});
+
+		this.Subscribe(this.selectedSegment, s => {
+			this._timeLine.setSelection(this._segments.indexOf(s));
+		})
+	}
+
 	private Initialize():void
 	{
 		if(this.Element() == null || this.duration() == 0)
@@ -144,6 +167,7 @@ export default class TimeLineHandler extends DisposableComponent
 		}
 
 		this.InitializePosition();
+		this.InitializeSelection();
 	}
 
 	private InitializePosition()

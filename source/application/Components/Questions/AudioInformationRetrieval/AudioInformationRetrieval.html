@@ -82,7 +82,7 @@
 					</tr>
 					</thead>
 					<tbody data-bind="foreach: Segments">
-						<tr>
+						<tr data-bind="css: {success: IsSelected}">
 							<td data-bind="text:StartTime"></td>
 							<td data-bind="text:EndTime"></td>
 							<td data-bind="text:Content"></td>

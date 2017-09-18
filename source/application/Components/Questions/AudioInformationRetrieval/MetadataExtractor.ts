@@ -2,6 +2,7 @@ import CockpitPortal = require("Managers/Portal/Cockpit");
 import Notification = require("Managers/Notification");
 
 type MetadataSchema = {"@HeaderField":string, "@Id":string};
+type Field = {Key:string, Value:string};
 
 export default class MetadataExtractor
 {
@@ -28,6 +29,26 @@ export default class MetadataExtractor
 		}
 
 		return segment.Metadata.Fields[headerName.slice(1)].Value;
+	}
+
+	public GetNoneHeaders(segment:CockpitPortal.IAudioInformationSegment):Field[]
+	{
+		let headerName = this.GetHeaderName(segment.Metadata.SchemaId);
+
+		if(headerName !== null)
+			headerName = headerName.slice(1);
+
+		let result:Field[] = [];
+
+		for(let key in segment.Metadata.Fields)
+		{
+			if(!segment.Metadata.Fields.hasOwnProperty(key) || key == headerName)
+				continue;
+
+			result.push({Key: key, Value: segment.Metadata.Fields[key].Value});
+		}
+
+		return result;
 	}
 
 	private GetHeaderName(schemaId: string):string

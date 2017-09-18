@@ -1,4 +1,5 @@
 import knockout = require("knockout");
+import CockpitPortal = require("Managers/Portal/Cockpit");
 import QuestionModel = require("Models/Question");
 import QuestionBase = require("Components/Questions/QuestionBase");
 import WayfAuthenticator from "Components/Questions/AudioInformationRetrieval/WayfAuthenticator";
@@ -24,6 +25,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 	public IsLoginReady:KnockoutObservable<boolean>;
 	public IsAuthenticated:KnockoutObservable<boolean>;
 	public CanLogin:KnockoutObservable<boolean>;
+	public SelectedSegment:KnockoutObservable<CockpitPortal.IAudioInformationSegment>;
 
 	private _wayfAuthenticator:WayfAuthenticator;
 	private _metadataExtractor:MetadataExtractor;
@@ -35,13 +37,14 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		this.InitializeWayf();
 
 		this._metadataExtractor = new MetadataExtractor(this.GetInput("MetadataSchema").MetadataSchema);
+		this.SelectedSegment = knockout.observable(null);
 
 		this.Search = new Search(this.GetInstrument("SearchView"), q => this.AddEvent("Search", null, null, q));
 		this.Rating = new Rating(this.GetInstrument("ItemEvaluationView"));
 		this.Audio = new Audio(this._wayfAuthenticator);
 
-		this.TimeLine = new TimeLineHandler(this.Audio.Position, this.Audio.Duration, this.GetInstrument("PlayerView"), this._metadataExtractor);
-		this.SegmentList = new SegmentList(this.GetInstrument("SegmentListView"), this._metadataExtractor);
+		this.TimeLine = new TimeLineHandler(this.Audio.Position, this.Audio.Duration, this.GetInstrument("PlayerView"), this._metadataExtractor, this.SelectedSegment);
+		this.SegmentList = new SegmentList(this.GetInstrument("SegmentListView"), this._metadataExtractor, this.SelectedSegment);
 
 		this.InitializeSelected();
 	}
