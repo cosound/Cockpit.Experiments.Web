@@ -18,6 +18,7 @@ export default class TimeLineHandler extends DisposableComponent
 {
 	public Header:string;
 	public Element = knockout.observable<HTMLElement|null>(null);
+	public SelectedSegmentIndex:KnockoutComputed<number|null>;
 
 	private _timeLine:Timeline|null = null;
 	private _options:TimelineOptions|null = null;
@@ -33,6 +34,7 @@ export default class TimeLineHandler extends DisposableComponent
 		this._data = new DataSet([],{});
 		this._configuration = configuration;
 		this.Header = this._configuration.Header;
+		this.SelectedSegmentIndex = this.PureComputed(() => this._segments != null ? this._segments.indexOf(selectedSegment()) : null);
 		this.InitializeOptions();
 		this.InitializeDuration();
 
@@ -144,9 +146,7 @@ export default class TimeLineHandler extends DisposableComponent
 				this.selectedSegment(null);
 		});
 
-		this.Subscribe(this.selectedSegment, s => {
-			this._timeLine.setSelection(this._segments.indexOf(s));
-		})
+		this.Subscribe(this.SelectedSegmentIndex, s => this._timeLine.setSelection(s));
 	}
 
 	private Initialize():void

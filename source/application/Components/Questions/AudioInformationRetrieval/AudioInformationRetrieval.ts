@@ -10,7 +10,7 @@ import SegmentList from "Components/Questions/AudioInformationRetrieval/SegmentL
 import MetadataExtractor from "Components/Questions/AudioInformationRetrieval/MetadataExtractor";
 import Audio from "Components/Questions/AudioInformationRetrieval/Audio";
 
-type Selection = {Id:string, Rating:string};
+type Selection = {Id:string, Rating:string, SegmentRatings: {Id:number, Rating:string}[]};
 
 class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 {
@@ -51,6 +51,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		this.SegmentList = new SegmentList(this.GetInstrument("SegmentListView"), this._metadataExtractor, this.SelectedSegment);
 
 		this.InitializeSelected();
+		this.InitializeSegmentRating();
 	}
 
 	private InitializeSelected():void
@@ -67,10 +68,60 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 			this.AddEvent("Result Selected", null, null, s.Data.Id);
 		});
 
-		this.Subscribe(this.Rating.Selected, s => this.UpdateAnswerWithSelectionRating(this.Search.Selected().Data.Id, s));
+		this.Subscribe(this.Rating.Selected, rating => this.UpdateAnswer(this.Search.Selected().Data.Id, s => s.Rating = rating));
 	}
 
-	private UpdateAnswerWithSelectionRating(selectionId:string, rating:string):void
+	private InitializeSegmentRating():void
+	{
+		this.Subscribe(this.TimeLine.SelectedSegmentIndex, s => {
+			this.SegmentRating.Selected(this.GetSegmentRatingFromAnswer(this.Search.Selected().Data.Id, s));
+		});
+		this.Subscribe(this.SegmentRating.Selected, s => {
+			this.UpdateSegmentAnswer(this.Search.Selected().Data.Id, this.TimeLine.SelectedSegmentIndex(), s);
+		});
+	}
+
+	private GetSegmentRatingFromAnswer(selectionId:string, segmentIndex:number):string
+	{
+		let selection = this.GetSelectionFromAnswer(selectionId);
+
+		if(selection == null || selection.SegmentRatings == null)
+			return null;
+
+		for(let i = 0 ; i < selection.SegmentRatings.length; i++)
+		{
+			if(selection.SegmentRatings[i].Id !== segmentIndex)
+				continue;
+
+			return selection.SegmentRatings[i].Rating;
+		}
+
+		return null;
+	}
+
+	private GetRatingFromAnswer(selectionId:string):string
+	{
+		let selection = this.GetSelectionFromAnswer(selectionId);
+
+		return selection != null ? selection.Rating : null;
+	}
+
+	private UpdateSegmentAnswer(selectionId:string, segmentIndex:number, rating:string):void
+	{
+		this.UpdateAnswer(selectionId, selection => {
+			for(let i = 0; i < selection.SegmentRatings.length; i++)
+			{
+				if(selection.SegmentRatings[i].Id !== segmentIndex)
+					continue;
+
+				selection.SegmentRatings[i].Rating = rating;
+				return;
+			}
+			selection.SegmentRatings.push({Id: segmentIndex, Rating: rating});
+		});
+	}
+
+	private UpdateAnswer(selectionId:string, callback:(selection:Selection)=>void):void
 	{
 		let answer = this.GetAnswer();
 
@@ -82,16 +133,24 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 			if(answer.Selections[i].Id !== selectionId)
 				continue;
 
-			answer.Selections[i].Rating = rating;
+			if(!answer.Selections[i].SegmentRatings)
+				answer.Selections[i].SegmentRatings = [];
+
+			callback(answer.Selections[i]);
+
 			this.SetAnswer(answer);
 			return;
 		}
 
-		answer.Selections.push({Id: selectionId, Rating: rating});
+		let selection:Selection = {Id: selectionId, Rating: null, SegmentRatings: []};
+
+		callback(selection);
+
+		answer.Selections.push(selection);
 		this.SetAnswer(answer);
 	}
 
-	private GetRatingFromAnswer(selectionId:string):string
+	private GetSelectionFromAnswer(selectionId:string):Selection
 	{
 		let answer = this.GetAnswer();
 
@@ -103,7 +162,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 			if(answer.Selections[i].Id !== selectionId)
 				continue;
 
-			return answer.Selections[i].Rating;
+			return answer.Selections[i];
 		}
 
 		return null;
