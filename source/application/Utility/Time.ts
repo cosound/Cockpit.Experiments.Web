@@ -24,7 +24,7 @@ export default class Time
 
 		if(result == null)
 			return 0;
-		
+
 		return ((parseInt(result[1]) * 60 + parseInt(result[2])) * 60 + parseFloat(result[3])) * 1000;
 	}
 
