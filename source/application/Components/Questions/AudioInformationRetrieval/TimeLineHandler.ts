@@ -18,7 +18,6 @@ export default class TimeLineHandler extends DisposableComponent
 {
 	public Header:string;
 	public Element = knockout.observable<HTMLElement|null>(null);
-	public SelectedSegmentIndex:KnockoutComputed<number|null>;
 
 	private _timeLine:Timeline|null = null;
 	private _options:TimelineOptions|null = null;
@@ -34,7 +33,6 @@ export default class TimeLineHandler extends DisposableComponent
 		this._data = new DataSet([],{});
 		this._configuration = configuration;
 		this.Header = this._configuration.Header;
-		this.SelectedSegmentIndex = this.PureComputed(() => this._segments() != null ? this._segments().indexOf(selectedSegment()) : null);
 		this.InitializeOptions();
 		this.InitializeDuration();
 
@@ -47,15 +45,15 @@ export default class TimeLineHandler extends DisposableComponent
 		this._segments.removeAll();
 		this._segments.push(...segments);
 
-		this._data.add(segments.map((s, i) => this.CreateSegment(s, i)));
+		this._data.add(segments.map(s => this.CreateSegment(s)));
 
 		this.UpdateGroups();
 	}
 
-	private CreateSegment(data:CockpitPortal.IAudioInformationSegment, id:number):DataItem
+	private CreateSegment(data:CockpitPortal.IAudioInformationSegment):DataItem
 	{
 		return {
-			id: id,
+			id: data.Id,
 			start: moment("1970-01-01T" + data.StartTime + "Z"),
 			end: moment("1970-01-01T" + data.EndTime + "Z"),
 			content: this.metadataExtractor.GetHeader(data),
@@ -88,17 +86,6 @@ export default class TimeLineHandler extends DisposableComponent
 
 		if(this._timeLine != null)
 			this._timeLine.setGroups(this._groups);
-	}
-
-	private GetContent(data:any):string
-	{
-		try {
-			return data.Metadata.Fields.MyTranscriptionAsString.Value
-		}
-		catch (error)
-		{
-			return "Unknown Format"
-		}
 	}
 
 	private InitializeOptions():void
@@ -147,7 +134,7 @@ export default class TimeLineHandler extends DisposableComponent
 				this.selectedSegment(null);
 		});
 
-		this.Subscribe(this.SelectedSegmentIndex, s => this._timeLine.setSelection(s));
+		this.Subscribe(this.selectedSegment, s => this._timeLine.setSelection(s.Id));
 	}
 
 	private Initialize():void

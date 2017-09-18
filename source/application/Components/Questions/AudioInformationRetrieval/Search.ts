@@ -55,11 +55,22 @@ export default class Search extends DisposableComponent
 			Relevance: result.Metadata.Fields["MyRelevance"].Value,
 			IsSelected: null,
 			Select: null,
-			Data: result
+			Data: this.AddIds(result)
 		};
 
 		item.IsSelected = this.PureComputed(() => this.Selected() == item);
 		item.Select = () => this.Selected(item);
 		return item;
+	}
+
+	private AddIds(result:CockpitPortal.IAudioInformation):CockpitPortal.IAudioInformation
+	{
+		for(let i = 0; i < result.Segments.length; i++)
+		{
+			if(!result.Segments[i].Id)
+				result.Segments[i].Id = i.toString();
+		}
+
+		return result;
 	}
 }

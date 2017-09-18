@@ -20,7 +20,13 @@ export default class Rating extends DisposableComponent
 		const items =  data.Components.Likert.Items.Item;
 
 		for(let i = 0; i < items.length; i++)
+		{
+			if(!items[i].Id)
+				items[i].Id = i.toString();
+
 			this.Items.push(this.CreateItem(items[i]));
+		}
+
 	}
 
 	public CreateItem(data:any):Item

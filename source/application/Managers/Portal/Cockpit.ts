@@ -86,6 +86,7 @@ export interface IAudioInformationMetadata
 
 export interface IAudioInformationSegment
 {
+	Id?:string;
 	CaterogyId : string;
 	StartTime: string;
 	EndTime: string;

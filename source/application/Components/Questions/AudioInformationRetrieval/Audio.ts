@@ -8,6 +8,7 @@ export default class Audio extends DisposableComponent
 {
 	public Position:KnockoutComputed<number>;
 	public Duration:KnockoutComputed<number>;
+	public IsPlaying:KnockoutComputed<boolean>;
 
 	public PrettyPosition:KnockoutComputed<string>;
 	public PrettyDuration:KnockoutComputed<string>;
@@ -23,6 +24,7 @@ export default class Audio extends DisposableComponent
 				this.Audio().Position(v);
 		});
 		this.Duration = this.PureComputed(() => this.Audio() != null ? this.Audio().Duration() : 0);
+		this.IsPlaying = this.PureComputed(() => this.Audio() != null ? this.Audio().IsPlaying() : false);
 		this.PrettyPosition = knockout.pureComputed(() => Time.ToPrettyTimeFromMilliseconds(this.Position()));
 		this.PrettyDuration = knockout.pureComputed(() => Time.ToPrettyTimeFromMilliseconds(this.Duration()));
 	}
