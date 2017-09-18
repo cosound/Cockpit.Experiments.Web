@@ -12,10 +12,20 @@ export default class Time
 		return moment(value).format("HH:mm:SS")
 	}
 
-	public static ToPrettyTimeFromMillieseconds(milliseconds: number): string
+	public static ToPrettyTimeFromMilliseconds(milliseconds: number): string
 	{
 		let date = new Date(milliseconds);
 		return `${this.GetTwoDigits(date.getUTCHours() + (date.getUTCDate() - 1) * 24) }:${this.GetTwoDigits(date.getUTCMinutes()) }:${this.GetTwoDigits(date.getUTCSeconds()) }`;
+	}
+
+	public static ToMillisecondsFromPrettyTime(value: string): number
+	{
+		const result = /(\d\d):(\d\d):(\d\d\.?\d*)/.exec(value);
+
+		if(result == null)
+			return 0;
+		
+		return ((parseInt(result[1]) * 60 + parseInt(result[2])) * 60 + parseFloat(result[3])) * 1000;
 	}
 
 	public static GetTwoDigits(value: number): string

@@ -23,8 +23,8 @@ export default class Audio extends DisposableComponent
 				this.Audio().Position(v);
 		});
 		this.Duration = this.PureComputed(() => this.Audio() != null ? this.Audio().Duration() : 0);
-		this.PrettyPosition = knockout.pureComputed(() => Time.ToPrettyTimeFromMillieseconds(this.Position()));
-		this.PrettyDuration = knockout.pureComputed(() => Time.ToPrettyTimeFromMillieseconds(this.Duration()));
+		this.PrettyPosition = knockout.pureComputed(() => Time.ToPrettyTimeFromMilliseconds(this.Position()));
+		this.PrettyDuration = knockout.pureComputed(() => Time.ToPrettyTimeFromMilliseconds(this.Duration()));
 	}
 
 	public Load(assetGuid:string):void
