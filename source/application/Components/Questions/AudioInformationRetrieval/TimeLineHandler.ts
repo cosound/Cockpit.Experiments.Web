@@ -25,7 +25,7 @@ export default class TimeLineHandler extends DisposableComponent
 	private _data:DataSet<DataItem>|null = null;
 	private _groups:DataGroup[] = [];
 	private _configuration:TimeLineConfiguration;
-	private _segments:CockpitPortal.IAudioInformationSegment[];
+	private _segments = knockout.observableArray<CockpitPortal.IAudioInformationSegment>();
 
 	constructor(private position: KnockoutComputed<number>, private duration: KnockoutComputed<number>, configuration: TimeLineConfiguration, private metadataExtractor: MetadataExtractor, private selectedSegment:KnockoutObservable<CockpitPortal.IAudioInformationSegment>)
 	{
@@ -34,7 +34,7 @@ export default class TimeLineHandler extends DisposableComponent
 		this._data = new DataSet([],{});
 		this._configuration = configuration;
 		this.Header = this._configuration.Header;
-		this.SelectedSegmentIndex = this.PureComputed(() => this._segments != null ? this._segments.indexOf(selectedSegment()) : null);
+		this.SelectedSegmentIndex = this.PureComputed(() => this._segments() != null ? this._segments().indexOf(selectedSegment()) : null);
 		this.InitializeOptions();
 		this.InitializeDuration();
 
@@ -44,7 +44,8 @@ export default class TimeLineHandler extends DisposableComponent
 	public LoadData(segments:CockpitPortal.IAudioInformationSegment[]):void
 	{
 		this._data.clear();
-		this._segments = segments;
+		this._segments.removeAll();
+		this._segments.push(...segments);
 
 		this._data.add(segments.map((s, i) => this.CreateSegment(s, i)));
 
@@ -141,7 +142,7 @@ export default class TimeLineHandler extends DisposableComponent
 		this._timeLine.on("select", (e) =>
 		{
 			if (e.items.length === 1)
-				this.selectedSegment(this._segments[e.items[0]]);
+				this.selectedSegment(this._segments()[e.items[0]]);
 			else
 				this.selectedSegment(null);
 		});
@@ -201,6 +202,6 @@ export default class TimeLineHandler extends DisposableComponent
 	{
 		this._options.max = this.duration();
 		this._options.end = this.duration();
-		this._timeLine.setOptions(this._options)
+		this._timeLine.setOptions(this._options);
 	}
 }
