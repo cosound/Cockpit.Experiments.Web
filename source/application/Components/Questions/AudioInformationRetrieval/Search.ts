@@ -1,12 +1,12 @@
 import knockout = require("knockout");
 import CockpitPortal = require("Managers/Portal/Cockpit");
 import Notification = require("Managers/Notification");
-import DisposableComponent = require("Components/DisposableComponent");
+import AudioInformationComponent from "Components/Questions/AudioInformationRetrieval/AudioInformationComponent";
 import Time from "Utility/Time";
 
 type SearchResult = {Name:string, ChannelName:string, Start:string, Duration:string, Relevance:string, IsSelected:KnockoutComputed<boolean>, Select:()=>void, Data: CockpitPortal.IAudioInformation}
 
-export default class Search extends DisposableComponent
+export default class Search extends AudioInformationComponent
 {
 	public Header:string;
 	public ButtonLabel:string;
@@ -22,7 +22,7 @@ export default class Search extends DisposableComponent
 
 	constructor(searchView:any, searchCallback:(query:string)=>void)
 	{
-		super();
+		super(searchView);
 		this.Header = searchView["Header"]["Label"];
 		this.ButtonLabel = searchView["Button"]["Label"];
 		this._functionValue = searchView.Query.Uri;

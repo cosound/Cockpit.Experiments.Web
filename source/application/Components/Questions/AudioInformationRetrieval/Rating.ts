@@ -1,9 +1,9 @@
 import knockout = require("knockout");
-import DisposableComponent = require("Components/DisposableComponent");
+import AudioInformationComponent from "Components/Questions/AudioInformationRetrieval/AudioInformationComponent";
 
 type Item = { Label:string; Id:string; };
 
-export default class Rating extends DisposableComponent
+export default class Rating extends AudioInformationComponent
 {
 	public Header:string;
 	public Name:string;
@@ -14,7 +14,7 @@ export default class Rating extends DisposableComponent
 
 	constructor(data:any)
 	{
-		super();
+		super(data);
 		this.Name = new Date().getTime().toString();
 		this.Header = data.Components.Heading;
 		const items =  data.Components.Likert.Items.Item;

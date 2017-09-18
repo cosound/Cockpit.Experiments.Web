@@ -1,10 +1,10 @@
 import knockout = require("knockout");
 import WayfAuthenticator from "Components/Questions/AudioInformationRetrieval/WayfAuthenticator";
-import DisposableComponent = require("Components/DisposableComponent");
+import AudioInformationComponent from "Components/Questions/AudioInformationRetrieval/AudioInformationComponent";
 import AudioPlayer from "Utility/Audio";
 import Time from "Utility/Time";
 
-export default class Audio extends DisposableComponent
+export default class Audio extends AudioInformationComponent
 {
 	public Position:KnockoutComputed<number>;
 	public Duration:KnockoutComputed<number>;
@@ -15,9 +15,9 @@ export default class Audio extends DisposableComponent
 
 	public Audio = knockout.observable<AudioPlayer>();
 
-	constructor(private wayfAuthenticator:WayfAuthenticator)
+	constructor(data:any, private wayfAuthenticator:WayfAuthenticator)
 	{
-		super();
+		super(data);
 
 		this.Position = this.PureComputed(() => this.Audio() != null ? this.Audio().Position() : 0, v => {
 			if(this.Audio() != null)

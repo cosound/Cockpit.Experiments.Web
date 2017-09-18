@@ -1,7 +1,7 @@
 import knockout = require("knockout");
 import moment = require("moment");
 import {DataSet, DataItem, Timeline, TimelineOptions, DataGroup} from "vis";
-import DisposableComponent = require("Components/DisposableComponent");
+import AudioInformationComponent from "Components/Questions/AudioInformationRetrieval/AudioInformationComponent";
 import CockpitPortal = require("Managers/Portal/Cockpit");
 import MetadataExtractor from "Components/Questions/AudioInformationRetrieval/MetadataExtractor";
 import Notification = require("Managers/Notification");
@@ -14,7 +14,7 @@ type TimeLineConfiguration = {Header:string,
 	}[]
 }}
 
-export default class TimeLineHandler extends DisposableComponent
+export default class TimeLineHandler extends AudioInformationComponent
 {
 	public Header:string;
 	public Element = knockout.observable<HTMLElement|null>(null);
@@ -26,9 +26,9 @@ export default class TimeLineHandler extends DisposableComponent
 	private _configuration:TimeLineConfiguration;
 	private _segments = knockout.observableArray<CockpitPortal.IAudioInformationSegment>();
 
-	constructor(private position: KnockoutComputed<number>, private duration: KnockoutComputed<number>, configuration: TimeLineConfiguration, private metadataExtractor: MetadataExtractor, private selectedSegment:KnockoutObservable<CockpitPortal.IAudioInformationSegment>)
+	constructor(data:any, private position: KnockoutComputed<number>, private duration: KnockoutComputed<number>, configuration: TimeLineConfiguration, private metadataExtractor: MetadataExtractor, private selectedSegment:KnockoutObservable<CockpitPortal.IAudioInformationSegment>)
 	{
-		super();
+		super(data);
 
 		this._data = new DataSet([],{});
 		this._configuration = configuration;

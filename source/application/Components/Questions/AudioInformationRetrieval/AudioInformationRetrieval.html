@@ -7,120 +7,132 @@
 			<button class="btn btn-primary" data-bind="click: Login">Login via Wayf</button>
 		</div>
 		<div data-bind="visible: IsAuthenticated">
-			<div class="search" data-bind="with: Search">
-				<h3 data-bind="text: Header"></h3>
-				<form data-bind="submit: Search">
-					<div class="input-group">
-						<input type="text" class="form-control" placeholder="Search..." data-bind="textInput: Query">
-						<span class="input-group-btn">
-							<button class="btn btn-primary" type="submit" data-bind="text: ButtonLabel"></button>
-						</span>
-					</div>
-				</form>
-				<table class="table table-striped" data-bind="visible: HasSearched">
-					<thead>
-					<tr>
-						<th>Name</th>
-						<th>Duration</th>
-						<th>Relevance</th>
-						<th></th>
-					</tr>
-					</thead>
-					<tbody data-bind="foreach: Results">
-					<tr data-bind="css: {success: IsSelected}">
-						<td data-bind="text: Name"></td>
-						<td data-bind="text: Duration"></td>
-						<td data-bind="text: Relevance"></td>
-						<td>
-							<button type="button" class="btn btn-default" data-bind="click: Select">Select</button>
-						</td>
-					</tr>
-					</tbody>
-				</table>
-			</div>
-			<!-- ko if: HasSelected -->
-			<div class="rating" data-bind="with: Rating">
-				<h3 data-bind="text: Header"></h3>
-				<div class="row">
-					<div class="Scale col-xs-12" data-bind="foreach: Items">
-						<label class="text-center" data-bind="css: {disabled: !$parent.CanAnswer()}, style: {width: (90 / $parent.Items.length) + '%'}">
-							<span class="Line"></span>
-							<input type="radio" data-bind="checked: $parent.Selected, attr: {name: $parent.Name}, value: Id, enable: $parent.CanAnswer" />
-							<br />
-							<span data-bind="html: Label"></span>
-						</label>
-					</div>
-				</div>
-			</div>
-			<div class="timeLine" data-bind="with: TimeLine">
-				<h3 data-bind="text: Header"></h3>
-				<div data-bind="Element: Element"></div>
-			</div>
-			<div class="playerControls" data-bind="with: Audio">
-				<!-- ko with: Audio() -->
-				<button type="button" class="btn btn-primary" data-bind="click: TogglePlay">
-					<span data-bind="visible: !IsPlaying()" class="glyphicon glyphicon-play" aria-hidden="true"></span>
-					<span data-bind="visible: IsPlaying" class="glyphicon glyphicon-pause" aria-hidden="true"></span>
-				</button>
-				<!-- /ko -->
-				<span class="time">
-					<span data-bind="text: PrettyPosition"></span> / <span data-bind="text: PrettyDuration"></span>
-				</span>
-				<!-- ko with: Audio() -->
-				<span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
-				<input type="range" min="0" max="100" step="1" data-bind="value: Volume, valueUpdate: 'input'" class="volume"/>
-				<!-- /ko -->
-			</div>
-			<div class="segmentList" data-bind="with: SegmentList">
-				<h3 data-bind="text: Header"></h3>
-				<table class="table table-striped table-hover">
-					<thead>
-					<tr>
-						<th></th>
-						<th>Start</th>
-						<th>End</th>
-						<th>Label</th>
-					</tr>
-					</thead>
-					<tbody data-bind="foreach: Segments">
-						<tr class="segment" data-bind="css: {success: IsSelected}, click: Select">
+			<!-- ko with: Search -->
+				<div class="search" data-bind="visible: IsVisible">
+					<h3 data-bind="text: Header"></h3>
+					<form data-bind="submit: Search">
+						<div class="input-group">
+							<input type="text" class="form-control" placeholder="Search..." data-bind="textInput: Query">
+							<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit" data-bind="text: ButtonLabel"></button>
+							</span>
+						</div>
+					</form>
+					<table class="table table-striped" data-bind="visible: HasSearched">
+						<thead>
+						<tr>
+							<th>Name</th>
+							<th>Duration</th>
+							<th>Relevance</th>
+							<th></th>
+						</tr>
+						</thead>
+						<tbody data-bind="foreach: Results">
+						<tr data-bind="css: {success: IsSelected}">
+							<td data-bind="text: Name"></td>
+							<td data-bind="text: Duration"></td>
+							<td data-bind="text: Relevance"></td>
 							<td>
-								<button type="button" class="btn btn-xs btn-primary" data-bind="click: Play">
-									<span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-								</button>
-							</td>
-							<td data-bind="text:StartTime"></td>
-							<td data-bind="text:EndTime"></td>
-							<td data-bind="text:Content"></td>
-						</tr>
-						<!-- ko if: IsSelected -->
-						<!-- ko foreach: ExpandedFields -->
-						<tr class="expandedData info">
-							<td colspan="4">
-								<p class="header" data-bind="text: Key"></p>
-								<p class="content" data-bind="html: Value"></p>
+								<button type="button" class="btn btn-default" data-bind="click: Select">Select</button>
 							</td>
 						</tr>
-						<!-- /ko -->
-						<!-- /ko -->
-					</tbody>
-				</table>
-			</div>
-			<!-- ko if: HasSelectedSegment -->
-			<div class="segmentRating" data-bind="with: SegmentRating">
-				<h3 data-bind="text: Header"></h3>
-				<div class="row">
-					<div class="Scale col-xs-12" data-bind="foreach: Items">
-						<label class="text-center" data-bind="css: {disabled: !$parent.CanAnswer()}, style: {width: (100 / $parent.Items.length) + '%'}">
-							<span class="Line"></span>
-							<input type="radio" data-bind="checked: $parent.Selected, attr: {name: $parent.Name}, value: Id, enable: $parent.CanAnswer" />
-							<br />
-							<span data-bind="html: Label"></span>
-						</label>
-					</div>
+						</tbody>
+					</table>
 				</div>
-			</div>
 			<!-- /ko -->
+			<!-- ko if: HasSelected -->
+				<!-- ko with: Rating -->
+					<div class="rating" data-bind="visible: IsVisible">
+						<h3 data-bind="text: Header"></h3>
+						<div class="row">
+							<div class="Scale col-xs-12" data-bind="foreach: Items">
+								<label class="text-center" data-bind="css: {disabled: !$parent.CanAnswer()}, style: {width: (90 / $parent.Items.length) + '%'}">
+									<span class="Line"></span>
+									<input type="radio" data-bind="checked: $parent.Selected, attr: {name: $parent.Name}, value: Id, enable: $parent.CanAnswer" />
+									<br />
+									<span data-bind="html: Label"></span>
+								</label>
+							</div>
+						</div>
+					</div>
+				<!-- /ko -->
+				<!-- ko with: TimeLine -->
+					<div class="timeLine" data-bind="visible: IsVisible">
+						<h3 data-bind="text: Header"></h3>
+						<div data-bind="Element: Element"></div>
+					</div>
+				<!-- /ko -->
+				<!-- ko with: Audio -->
+					<div class="playerControls" data-bind="visible: IsVisible">
+						<!-- ko with: Audio() -->
+							<button type="button" class="btn btn-primary" data-bind="click: TogglePlay">
+								<span data-bind="visible: !IsPlaying()" class="glyphicon glyphicon-play" aria-hidden="true"></span>
+								<span data-bind="visible: IsPlaying" class="glyphicon glyphicon-pause" aria-hidden="true"></span>
+							</button>
+						<!-- /ko -->
+						<span class="time">
+							<span data-bind="text: PrettyPosition"></span> / <span data-bind="text: PrettyDuration"></span>
+						</span>
+						<!-- ko with: Audio() -->
+							<span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
+							<input type="range" min="0" max="100" step="1" data-bind="value: Volume, valueUpdate: 'input'" class="volume"/>
+						<!-- /ko -->
+					</div>
+				<!-- /ko -->
+				<!-- ko with: SegmentList -->
+					<div class="segmentList" data-bind="visible: IsVisible">
+						<h3 data-bind="text: Header"></h3>
+						<table class="table table-striped table-hover">
+							<thead>
+							<tr>
+								<th></th>
+								<th>Start</th>
+								<th>End</th>
+								<th>Label</th>
+							</tr>
+							</thead>
+							<tbody data-bind="foreach: Segments">
+								<tr class="segment" data-bind="css: {success: IsSelected}, click: Select">
+									<td>
+										<button type="button" class="btn btn-xs btn-primary" data-bind="click: Play">
+											<span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+										</button>
+									</td>
+									<td data-bind="text:StartTime"></td>
+									<td data-bind="text:EndTime"></td>
+									<td data-bind="text:Content"></td>
+								</tr>
+								<!-- ko if: IsSelected -->
+									<!-- ko foreach: ExpandedFields -->
+										<tr class="expandedData info">
+											<td colspan="4">
+												<p class="header" data-bind="text: Key"></p>
+												<p class="content" data-bind="html: Value"></p>
+											</td>
+										</tr>
+									<!-- /ko -->
+								<!-- /ko -->
+							</tbody>
+						</table>
+					</div>
+				<!-- /ko -->
+				<!-- ko if: HasSelectedSegment -->
+					<!-- ko with: SegmentRating -->
+						<div class="segmentRating" data-bind="visible: IsVisible">
+							<h3 data-bind="text: Header"></h3>
+							<div class="row">
+								<div class="Scale col-xs-12" data-bind="foreach: Items">
+									<label class="text-center" data-bind="css: {disabled: !$parent.CanAnswer()}, style: {width: (100 / $parent.Items.length) + '%'}">
+										<span class="Line"></span>
+										<input type="radio" data-bind="checked: $parent.Selected, attr: {name: $parent.Name}, value: Id, enable: $parent.CanAnswer" />
+										<br />
+										<span data-bind="html: Label"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+					<!-- /ko -->
+				<!-- /ko -->
 			<!-- /ko -->
 		</div>
 	</div>

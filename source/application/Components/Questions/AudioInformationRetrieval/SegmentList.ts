@@ -3,15 +3,16 @@ import Time from "Utility/Time";
 import CockpitPortal = require("Managers/Portal/Cockpit");
 import DisposableComponent = require("Components/DisposableComponent");
 import MetadataExtractor from "Components/Questions/AudioInformationRetrieval/MetadataExtractor";
+import AudioInformationComponent from "Components/Questions/AudioInformationRetrieval/AudioInformationComponent";
 
-export default class SegmentList extends DisposableComponent
+export default class SegmentList extends AudioInformationComponent
 {
 	public Header:string;
 	public Segments = knockout.observableArray<Segment>();
 
 	constructor(data: any, private metadataExtractor: MetadataExtractor, private selectedSegment:KnockoutObservable<CockpitPortal.IAudioInformationSegment>, private formatter:(value:string)=>string, private playCallback:(position:number)=>void)
 	{
-		super();
+		super(data);
 
 		this.Header = data.Header;
 	}
