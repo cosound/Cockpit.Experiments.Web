@@ -19,8 +19,10 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 	public TimeLine:TimeLineHandler;
 	public Audio:Audio;
 	public SegmentList:SegmentList;
+	public SegmentRating:Rating;
 
 	public HasSelected:KnockoutComputed<boolean>;
+	public HasSelectedSegment:KnockoutComputed<boolean>;
 
 	public IsLoginReady:KnockoutObservable<boolean>;
 	public IsAuthenticated:KnockoutObservable<boolean>;
@@ -38,9 +40,11 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 
 		this._metadataExtractor = new MetadataExtractor(this.GetInput("MetadataSchema").MetadataSchema);
 		this.SelectedSegment = knockout.observable(null);
+		this.HasSelectedSegment = this.PureComputed(()=> this.SelectedSegment() != null);
 
 		this.Search = new Search(this.GetInstrument("SearchView"), q => this.AddEvent("Search", null, null, q));
 		this.Rating = new Rating(this.GetInstrument("ItemEvaluationView"));
+		this.SegmentRating = new Rating(this.GetInstrument("SegmentEvaluationView"));
 		this.Audio = new Audio(this._wayfAuthenticator);
 
 		this.TimeLine = new TimeLineHandler(this.Audio.Position, this.Audio.Duration, this.GetInstrument("PlayerView"), this._metadataExtractor, this.SelectedSegment);
