@@ -10,7 +10,8 @@ import SegmentList from "Components/Questions/AudioInformationRetrieval/SegmentL
 import MetadataExtractor from "Components/Questions/AudioInformationRetrieval/MetadataExtractor";
 import Audio from "Components/Questions/AudioInformationRetrieval/Audio";
 
-type Selection = {Id:string, Rating:string, SegmentRatings: {Id:string, Rating:string}[]};
+type Selection = {Id:string, Rating:string, SegmentRatings: string};
+type SegmentRating = {Id:string, Rating:string};
 
 class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 {
@@ -97,12 +98,14 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		if(selection == null || selection.SegmentRatings == null)
 			return null;
 
-		for(let i = 0 ; i < selection.SegmentRatings.length; i++)
+		const ratings = JSON.parse(selection.SegmentRatings) as SegmentRating[];
+
+		for(let i = 0 ; i < ratings.length; i++)
 		{
-			if(selection.SegmentRatings[i].Id !== segmentId)
+			if(ratings[i].Id !== segmentId)
 				continue;
 
-			return selection.SegmentRatings[i].Rating;
+			return ratings[i].Rating;
 		}
 
 		return null;
@@ -118,15 +121,21 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 	private UpdateSegmentAnswer(selectionId:string, segmentId:string, rating:string):void
 	{
 		this.UpdateAnswer(selectionId, selection => {
-			for(let i = 0; i < selection.SegmentRatings.length; i++)
+
+			const ratings = JSON.parse(selection.SegmentRatings) as SegmentRating[];
+
+			for(let i = 0; i < ratings.length; i++)
 			{
-				if(selection.SegmentRatings[i].Id !== segmentId)
+				if(ratings[i].Id !== segmentId)
 					continue;
 
-				selection.SegmentRatings[i].Rating = rating;
+				ratings[i].Rating = rating;
+				selection.SegmentRatings = JSON.stringify(ratings)
 				return;
 			}
-			selection.SegmentRatings.push({Id: segmentId, Rating: rating});
+			ratings.push({Id: segmentId, Rating: rating});
+
+			selection.SegmentRatings = JSON.stringify(ratings);
 		});
 	}
 
@@ -143,7 +152,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 				continue;
 
 			if(!answer.Selections[i].SegmentRatings)
-				answer.Selections[i].SegmentRatings = [];
+				answer.Selections[i].SegmentRatings = "[]";
 
 			callback(answer.Selections[i]);
 
@@ -151,7 +160,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 			return;
 		}
 
-		let selection:Selection = {Id: selectionId, Rating: null, SegmentRatings: []};
+		let selection:Selection = {Id: selectionId, Rating: null, SegmentRatings: "[]"};
 
 		callback(selection);
 
