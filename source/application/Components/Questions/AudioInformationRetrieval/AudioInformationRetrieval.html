@@ -24,21 +24,20 @@
 			<div class="itemList" data-bind="visible: IsVisible && HasResults()">
 				<table class="table table-striped">
 					<thead>
-					<tr>
-						<th>Name</th>
-						<th>Duration</th>
-						<th>Relevance</th>
-						<th></th>
+					<tr data-bind="foreach: Columns">
+						<th data-bind="text: Header"></th>
 					</tr>
 					</thead>
 					<tbody data-bind="foreach: Results">
-					<tr data-bind="css: {success: IsSelected}">
-						<td data-bind="text: Name"></td>
-						<td data-bind="text: Duration"></td>
-						<td data-bind="text: Relevance"></td>
-						<td>
-							<button type="button" class="btn btn-default" data-bind="click: Select">Select</button>
-						</td>
+					<tr data-bind="css: {success: IsSelected}, foreach: Fields">
+						<!-- ko ifnot: IsPlayButton -->
+							<td data-bind="text: Value"></td>
+						<!-- /ko -->
+						<!-- ko if: IsPlayButton -->
+							<td data-bind="if: IsPlayButton">
+								<button type="button" class="btn btn-default" data-bind="click: $parent.Select">Select</button>
+							</td>
+						<!-- /ko -->
 					</tr>
 					</tbody>
 				</table>
