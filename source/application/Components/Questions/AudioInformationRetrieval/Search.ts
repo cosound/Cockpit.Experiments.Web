@@ -33,8 +33,8 @@ export default class Search extends AudioInformationComponent
 
 		this._searchCallback = searchCallback;
 
-		if(predefinedData != null && predefinedData.Items && predefinedData.Items.Item && predefinedData.Items.Item.length > 0)
-			this.Results(predefinedData.Items.Item.map(r => this.CreateSearchResult(r)));
+		/*if(predefinedData != null && predefinedData.Items && predefinedData.Items.Item && predefinedData.Items.Item.length > 0)
+			this.Results(predefinedData.Items.Item.map(r => this.CreateSearchResult(r)));*/
 
 		this.HasSearched = this.PureComputed(()=> this.Results().length != 0);
 	}

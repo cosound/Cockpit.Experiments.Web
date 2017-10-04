@@ -17,7 +17,7 @@ type TimeLineConfiguration = {Header:string,
 
 export default class TimeLineHandler extends AudioInformationComponent
 {
-	public Header:string;
+	public Header:string = "";
 	public Element = knockout.observable<HTMLElement|null>(null);
 
 	private _timeLine:Timeline|null = null;
@@ -31,13 +31,16 @@ export default class TimeLineHandler extends AudioInformationComponent
 	{
 		super(data);
 
-		this._data = new DataSet([],{});
-		this._configuration = data;
-		this.Header = this._configuration.Header;
-		this.InitializeOptions();
-		this.InitializeDuration();
+		if(this.IsVisible)
+		{
+			this._data = new DataSet([],{});
+			this._configuration = data;
+			this.Header = this._configuration.Header;
+			this.InitializeOptions();
+			this.InitializeDuration();
 
-		this.SubscribeUntilChange(this.Element, () => this.Initialize());
+			this.SubscribeUntilChange(this.Element, () => this.Initialize());
+		}
 	}
 
 	public LoadData(segments:CockpitPortal.IAudioInformationSegment[]):void

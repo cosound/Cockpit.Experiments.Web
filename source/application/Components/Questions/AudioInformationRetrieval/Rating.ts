@@ -5,7 +5,7 @@ type Item = { Label:string; Id:string; };
 
 export default class Rating extends AudioInformationComponent
 {
-	public Header:string;
+	public Header:string = "";
 	public Name:string;
 	public Items: Item[] = [];
 	public Answer = knockout.observable<string>(null);
@@ -15,18 +15,22 @@ export default class Rating extends AudioInformationComponent
 	constructor(data:any)
 	{
 		super(data);
+
 		this.Name = new Date().getTime().toString();
-		this.Header = data.Components.Heading;
-		const items =  data.Components.Likert.Items.Item;
 
-		for(let i = 0; i < items.length; i++)
+		if(this.IsVisible)
 		{
-			if(!items[i].Id)
-				items[i].Id = i.toString();
+			this.Header = data.Components.Heading;
+			const items =  data.Components.Likert.Items.Item;
 
-			this.Items.push(this.CreateItem(items[i]));
+			for(let i = 0; i < items.length; i++)
+			{
+				if(!items[i].Id)
+					items[i].Id = i.toString();
+
+				this.Items.push(this.CreateItem(items[i]));
+			}
 		}
-
 	}
 
 	public CreateItem(data:any):Item

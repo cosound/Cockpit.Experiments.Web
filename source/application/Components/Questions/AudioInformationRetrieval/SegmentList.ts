@@ -7,14 +7,15 @@ import AudioInformationComponent from "Components/Questions/AudioInformationRetr
 
 export default class SegmentList extends AudioInformationComponent
 {
-	public Header:string;
+	public Header:string = "";
 	public Segments = knockout.observableArray<Segment>();
 
 	constructor(data: any, private metadataExtractor: MetadataExtractor, private selectedSegment:KnockoutObservable<CockpitPortal.IAudioInformationSegment>, private formatter:(value:string)=>string, private playCallback:(position:number)=>void)
 	{
 		super(data);
 
-		this.Header = data.Header;
+		if(this.IsVisible)
+			this.Header = data.Header;
 	}
 
 	public LoadData(segments: CockpitPortal.IAudioInformationSegment[])
