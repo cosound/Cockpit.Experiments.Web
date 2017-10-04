@@ -6,12 +6,13 @@ import CockpitPortal = require("Managers/Portal/Cockpit");
 import MetadataExtractor from "Components/Questions/AudioInformationRetrieval/MetadataExtractor";
 import Notification = require("Managers/Notification");
 
+type TimeLineCategory = {
+	Id:string,
+	Header:string
+}
 type TimeLineConfiguration = {Header:string,
 	Categories: {
-	Category: {
-		Id:string,
-		Header:string
-	}[]
+	Category: TimeLineCategory|TimeLineCategory[]
 }}
 
 export default class TimeLineHandler extends AudioInformationComponent
@@ -26,12 +27,12 @@ export default class TimeLineHandler extends AudioInformationComponent
 	private _configuration:TimeLineConfiguration;
 	private _segments = knockout.observableArray<CockpitPortal.IAudioInformationSegment>();
 
-	constructor(data:any, private position: KnockoutComputed<number>, private duration: KnockoutComputed<number>, configuration: TimeLineConfiguration, private metadataExtractor: MetadataExtractor, private selectedSegment:KnockoutObservable<CockpitPortal.IAudioInformationSegment>)
+	constructor(data:TimeLineConfiguration, private position: KnockoutComputed<number>, private duration: KnockoutComputed<number>, private metadataExtractor: MetadataExtractor, private selectedSegment:KnockoutObservable<CockpitPortal.IAudioInformationSegment>)
 	{
 		super(data);
 
 		this._data = new DataSet([],{});
-		this._configuration = configuration;
+		this._configuration = data;
 		this.Header = this._configuration.Header;
 		this.InitializeOptions();
 		this.InitializeDuration();
@@ -75,11 +76,26 @@ export default class TimeLineHandler extends AudioInformationComponent
 
 				groups[data.group] = true;
 
-				const groupConfig = this._configuration.Categories.Category.filter(c => c.Id == data.group);
+				let groupConfig:TimeLineCategory;
+
+				if(this._configuration.Categories.Category instanceof Array)
+				{
+					const groups = (this._configuration.Categories.Category as TimeLineCategory[]).filter(c => c.Id == data.group)
+
+					if(groups.length != 0)
+						groupConfig = groups[0];
+				}
+				else
+				{
+					groupConfig = this._configuration.Categories.Category as TimeLineCategory
+				}
+
+				if(!groupConfig)
+					groupConfig = {Id: null, Header: "Gruppe"};
 
 				this._groups.push({
 					id: data.group,
-					content: groupConfig.length != 0 ? groupConfig[0].Header : "Gruppe"
+					content: groupConfig.Header
 				});
 			});
 		}
