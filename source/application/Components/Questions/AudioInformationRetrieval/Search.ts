@@ -8,8 +8,8 @@ type SearchResult = {Name:string, ChannelName:string, Start:string, Duration:str
 
 export default class Search extends AudioInformationComponent
 {
-	public Header:string;
-	public ButtonLabel:string;
+	public Header:string = "";
+	public ButtonLabel:string = "";
 
 	public Query = knockout.observable("def");
 	public Results = knockout.observableArray<SearchResult>();
@@ -20,13 +20,21 @@ export default class Search extends AudioInformationComponent
 	private _functionValue:string;
 	private _searchCallback:(query:string)=>void;
 
-	constructor(searchView:any, searchCallback:(query:string)=>void)
+	constructor(searchView:any, searchCallback:(query:string)=>void, predefinedData:any|null)
 	{
 		super(searchView);
-		this.Header = searchView["Header"]["Label"];
-		this.ButtonLabel = searchView["Button"]["Label"];
-		this._functionValue = searchView.Query.Uri;
+
+		if(this.IsVisible)
+		{
+			this.Header = searchView["Header"]["Label"];
+			this.ButtonLabel = searchView["Button"]["Label"];
+			this._functionValue = searchView.Query.Uri;
+		}
+
 		this._searchCallback = searchCallback;
+
+		if(predefinedData != null && predefinedData.Items && predefinedData.Items.Item && predefinedData.Items.Item.length > 0)
+			this.Results(predefinedData.Items.Item.map(r => this.CreateSearchResult(r)));
 
 		this.HasSearched = this.PureComputed(()=> this.Results().length != 0);
 	}

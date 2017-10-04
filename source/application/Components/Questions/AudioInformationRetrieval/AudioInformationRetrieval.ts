@@ -43,7 +43,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		this.SelectedSegment = knockout.observable(null);
 		this.HasSelectedSegment = this.PureComputed(()=> this.SelectedSegment() != null);
 
-		this.Search = new Search(this.GetInstrument("SearchView"), q => this.AddEvent("Search", null, null, q));
+		this.Search = new Search(this.GetInstrument("SearchView"), q => this.AddEvent("Search", null, null, q), this.GetInput("Data", false));
 		this.Rating = new Rating(this.GetInstrument("ItemEvaluationView"));
 		this.SegmentRating = new Rating(this.GetInstrument("SegmentEvaluationView"));
 		this.Audio = new Audio(this.GetInstrument("PlayerView"), this._wayfAuthenticator);

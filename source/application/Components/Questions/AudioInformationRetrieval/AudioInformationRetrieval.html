@@ -8,16 +8,18 @@
 		</div>
 		<div data-bind="visible: IsAuthenticated">
 			<!-- ko with: Search -->
-				<div class="search" data-bind="visible: IsVisible">
-					<h3 data-bind="text: Header"></h3>
-					<form data-bind="submit: Search">
-						<div class="input-group">
-							<input type="text" class="form-control" placeholder="Search..." data-bind="textInput: Query">
-							<span class="input-group-btn">
-								<button class="btn btn-primary" type="submit" data-bind="text: ButtonLabel"></button>
-							</span>
-						</div>
-					</form>
+				<div class="search">
+					<!-- ko if: IsVisible -->
+						<h3 data-bind="text: Header"></h3>
+						<form data-bind="submit: Search">
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="Search..." data-bind="textInput: Query">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" type="submit" data-bind="text: ButtonLabel"></button>
+								</span>
+							</div>
+						</form>
+					<!-- /ko -->
 					<table class="table table-striped" data-bind="visible: HasSearched">
 						<thead>
 						<tr>

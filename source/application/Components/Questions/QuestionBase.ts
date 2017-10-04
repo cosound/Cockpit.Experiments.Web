@@ -70,7 +70,7 @@ class QuestionsBase<T> extends DisposableComponent implements IQuestionViewModel
 		return this.Model === null || this.Model.Input === null ? [] : this.Model.Input;
 	}
 
-	protected GetInput(key:string):any
+	protected GetInput(key:string, failOnMissing = true):any
 	{
 		const inputs = this.GetInputs();
 
@@ -79,7 +79,9 @@ class QuestionsBase<T> extends DisposableComponent implements IQuestionViewModel
 			if (inputs[i].hasOwnProperty(key)) return inputs[i][key];
 		}
 
-		throw new Error(`${key} object not found in input`);
+		if(failOnMissing)
+			throw new Error(`${key} object not found in input`);
+		return null;
 	}
 
 	protected GetInstrumentFormatted(key: string): string
