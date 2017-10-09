@@ -147,8 +147,9 @@ export default class TimeLineHandler extends AudioInformationComponent
 	{
 		this._timeLine.on("select", (e) =>
 		{
+			console.log(e, this._segments());
 			if (e.items.length === 1)
-				this.selectedSegment(this._segments()[e.items[0]]);
+				this.selectedSegment(this._segments().filter(s => s.Id == e.items[0])[0]);
 			else
 				this.selectedSegment(null);
 		});
