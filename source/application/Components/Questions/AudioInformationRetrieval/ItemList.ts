@@ -25,7 +25,9 @@ export default class Search extends AudioInformationComponent
 		this.Columns = data.Fields.Field;
 
 		if(predefinedData != null && predefinedData.Items && predefinedData.Items.Item && predefinedData.Items.Item.length > 0)
-			this.Results(predefinedData.Items.Item.map((item:CockpitPortal.IAudioInformation, index:number) => this.CreateSearchResult(item, index)));
+		{
+			this.Results(predefinedData.Items.Item.map((item:CockpitPortal.IAudioInformation, index:number) => this.CreateSearchResult(this.ConvertData(item), index)));
+		}
 
 		this.HasResults = this.PureComputed(() => this.Results().length > 0);
 
@@ -33,6 +35,46 @@ export default class Search extends AudioInformationComponent
 			this.Results.removeAll();
 			this.Results.push(...r.map((item, index) => this.CreateSearchResult(item, index)));
 		})
+	}
+
+	private ConvertData(data:any):any
+	{
+		data.Metadata = this.ConvertFields(data.Metadata);
+		data.Segments = data.Segments.Segment.map((s:any) => {
+			s.Metadata = this.ConvertFields(s.Metadata);
+			return s;
+		});
+
+		return data;
+	}
+
+	private ConvertFields(data:any):any
+	{
+		if(data.hasOwnProperty("Fields"))
+			return data;
+
+		const newData:any = {SchemaId: "", Fields:{}};
+
+		if(data.hasOwnProperty("@SchemaId"))
+			newData.SchemaId = data["@SchemaId"];
+
+		for(let key in data)
+		{
+			if(!data.hasOwnProperty(key))
+				continue;
+
+			let value = data[key];
+			if(key == "@SchemaId")
+				newData.SchemaId = value;
+			else if(value.hasOwnProperty("Value"))
+				newData.Fields[key] = value;
+			else if(value.hasOwnProperty("#text"))
+				newData.Fields[key] = {Value: value["#text"]};
+			else
+				throw new Error("Failed to convert fields: " + JSON.stringify(value));
+		}
+
+		return newData;
 	}
 
 	private CreateSearchResult(result:CockpitPortal.IAudioInformation, index:number):SearchResult
