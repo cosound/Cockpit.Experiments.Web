@@ -19,6 +19,7 @@ export default class TimeLineHandler extends AudioInformationComponent
 {
 	public Header:string = "";
 	public Element = knockout.observable<HTMLElement|null>(null);
+	public ViewPosition:KnockoutObservable<{start:number, end:number}>;
 
 	private _timeLine:Timeline|null = null;
 	private _options:TimelineOptions|null = null;
@@ -30,6 +31,8 @@ export default class TimeLineHandler extends AudioInformationComponent
 	constructor(data:TimeLineConfiguration, private position: KnockoutComputed<number>, private duration: KnockoutComputed<number>, private metadataExtractor: MetadataExtractor, private selectedSegment:KnockoutObservable<CockpitPortal.IAudioInformationSegment>)
 	{
 		super(data);
+
+		this.ViewPosition = knockout.observable(null).extend({rateLimit: 2000});
 
 		if(this.IsVisible)
 		{
@@ -202,6 +205,9 @@ export default class TimeLineHandler extends AudioInformationComponent
 		this._timeLine.on("timechange", e =>
 		{
 			isDraggingTime = true;
+		});
+		this._timeLine.on("rangechanged", e => {
+			this.ViewPosition({start: e.start.getTime(), end: e.end.getTime()})
 		});
 	}
 

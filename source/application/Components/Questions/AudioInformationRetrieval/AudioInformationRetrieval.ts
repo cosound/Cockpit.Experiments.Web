@@ -57,7 +57,13 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 			this.AddEvent("Player", this.ItemList.Selected().Data.Id, "Jump", JSON.stringify({Position: p}));
 		});
 
-		this.Subscribe(this.Audio.IsPlaying, p => this.AddEvent("Player", this.ItemList.Selected().Data.Id, "TooglePlay", JSON.stringify({IsPlaying: p, Position: this.Audio.Position()})));
+		this.Subscribe(this.Audio.IsPlaying, p => {
+			this.AddEvent("Player", this.ItemList.Selected().Data.Id, "TooglePlay", JSON.stringify({IsPlaying: p, Position: this.Audio.Position()}));
+		});
+		this.Subscribe(this.TimeLine.ViewPosition, v => {
+			if(v != null)
+				this.AddEvent("Timeline", this.ItemList.Selected().Data.Id, "Zoom", JSON.stringify(v));
+		});
 		this.InitializeSelected();
 		this.InitializeSegmentRating();
 	}
@@ -66,7 +72,10 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 	{
 		this.HasSelected = this.PureComputed(()=> this.ItemList.Selected() != null);
 
+		let isChanging = false;
+
 		this.Subscribe(this.ItemList.Selected, s => {
+			isChanging = true;
 			this.Audio.Load(s.Data.Stimulus.URI);
 			this.TimeLine.LoadData(s.Data.Segments);
 			this.SegmentList.LoadData(s.Data.Segments);
@@ -74,9 +83,13 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 			this.Rating.Selected(this.GetRatingFromAnswer(s.Data.Id));
 
 			this.AddEvent("Result Selected", s.Data.Id);
+			isChanging = false;
 		});
 
 		this.Subscribe(this.Rating.Selected, rating => {
+			if(isChanging)
+				return;
+
 			this.UpdateAnswer(this.ItemList.Selected().Data.Id, s => s.Rating = rating);
 			this.AddEvent("Answer", this.ItemList.Selected().Data.Id, "Selection", JSON.stringify({Rating: rating}));
 		});
@@ -84,11 +97,16 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 
 	private InitializeSegmentRating():void
 	{
+		let isChanging = false;
 		this.Subscribe(this.SelectedSegment, segment => {
+			isChanging = true;
 			this.SegmentRating.Selected(this.GetSegmentRatingFromAnswer(this.ItemList.Selected().Data.Id, segment.Id));
 			this.AddEvent("Segment Selected", segment.Id, null, JSON.stringify({SelectionId: this.ItemList.Selected().Data.Id}));
+			isChanging = false;
 		});
 		this.Subscribe(this.SegmentRating.Selected, rating => {
+			if(isChanging)
+				return;
 			this.UpdateSegmentAnswer(this.ItemList.Selected().Data.Id, this.SelectedSegment().Id, rating);
 			this.AddEvent("Answer", this.ItemList.Selected().Data.Id, "Segment", JSON.stringify({SegmentId: this.SelectedSegment().Id, Rating: rating}));
 		});

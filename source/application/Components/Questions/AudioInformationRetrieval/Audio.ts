@@ -39,7 +39,7 @@ export default class Audio extends AudioInformationComponent
 			this.Audio().Volume(10);
 
 			this.AddAction(this.Audio().IsReady, () => {
-				this.Audio().Play();
+
 			});
 		});
 	}
