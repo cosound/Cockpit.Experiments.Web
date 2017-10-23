@@ -4,8 +4,9 @@ import QuestionModel = require("Models/Question");
 import ExperimentManager = require("Managers/Portal/Experiment");
 import CockpitPortal = require("Managers/Portal/Cockpit");
 import NameConventionLoader = require("Components/NameConventionLoader");
+import DisposableComponent = require("Components/DisposableComponent");
 
-class Default
+class Default extends DisposableComponent
 {
 	private _slide: SlideModel;
 	private _uiLessQuestions: IQuestionViewModel[] = [];
@@ -17,12 +18,13 @@ class Default
 
 	constructor(slide: SlideModel)
 	{
+		super();
 		this._slide = slide;
 		slide.SlideCompleted = callback => this.SlideCompleted(callback);
 		slide.ScrollToFirstInvalidAnswerCallback = () => this.ScrollToFirstInvalidAnswer();
 
-		this.HaveActiveAnswersSets = knockout.computed(() => this._activeAnsweSets() !== 0);
-		slide.SetIsWorking(knockout.computed(() => this._isWorking() || this.HaveActiveAnswersSets()));
+		this.HaveActiveAnswersSets = this.Computed(() => this._activeAnsweSets() !== 0);
+		slide.SetIsWorking(this.Computed(() => this._isWorking() || this.HaveActiveAnswersSets()));
 
 		this.InitializeQuestions(slide.Questions);
 	}
@@ -35,7 +37,7 @@ class Default
 		for (var i = 0; i < questions.length; i++)
 		{
 			var questionModel = new QuestionModel(questions[i], question => this.AnswerChanged(question), loaded);
-			questionModel.HasValidAnswer.subscribe(() => this.CheckIfAllQuestionsAreAnswered());
+			this.Subscribe(questionModel.HasValidAnswer, () => this.CheckIfAllQuestionsAreAnswered());
 			this.Questions.push(questionModel);
 
 			if (!questionModel.HasUIElement)
@@ -52,6 +54,8 @@ class Default
 			this._uiLessQuestions[i].SlideLoaded();
 
 		this.CheckIfAllQuestionsAreAnswered();
+
+		console.log("SlideLoaded", this._slide.CanGoToNextSlide())
 	}
 
 	private SlideCompleted(completed: () => void):void
@@ -65,21 +69,14 @@ class Default
 
 		if (waitForAnswerSaved)
 		{
-			var sub = this.HaveActiveAnswersSets.subscribe(v =>
-			{
-				if (!v)
-				{
-					sub.dispose();
-					completed();
-				}
-			});
+			this.SubscribeUntilChange(this.HaveActiveAnswersSets, completed)
 		} else
 			completed();
 	}
 
 	private ScrollToFirstInvalidAnswer():void
 	{
-		var question = this.GetFirstQuestionWithoutValidAnswer();
+		const question = this.GetFirstQuestionWithoutValidAnswer();
 
 		if(question != null) question.ScrollTo(ExperimentManager.ScrollToInvalidAnswerDuration);
 	}
@@ -106,8 +103,10 @@ class Default
 
 	private GetFirstQuestionWithoutValidAnswer(): QuestionModel
 	{
-		for (var i = 0; i < this.Questions.length; i++)
+		for (let i = 0; i < this.Questions.length; i++)
 		{
+			console.log(this.Questions[i].Type, this.Questions[i].RequiresInput, this.Questions[i].HasValidAnswer())
+
 			if (this.Questions[i].RequiresInput && !this.Questions[i].HasValidAnswer()) return this.Questions[i];
 		}
 
@@ -116,7 +115,11 @@ class Default
 
 	private CheckIfAllQuestionsAreAnswered():void
 	{
+		console.log("CheckIfAllQuestionsAreAnswered", "Start")
+
 		this._slide.CanGoToNextSlide(this.GetFirstQuestionWithoutValidAnswer() == null && !this.HaveActiveAnswersSets());
+
+		console.log("CheckIfAllQuestionsAreAnswered", this._slide.CanGoToNextSlide())
 	}
 }
 

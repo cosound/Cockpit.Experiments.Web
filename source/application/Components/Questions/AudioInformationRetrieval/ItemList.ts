@@ -1,7 +1,6 @@
 import knockout = require("knockout");
 import CockpitPortal = require("Managers/Portal/Cockpit");
 import AudioInformationComponent from "Components/Questions/AudioInformationRetrieval/AudioInformationComponent";
-import Time from "Utility/Time";
 
 type FieldData = {Value:string, IsPlayButton:boolean};
 type ColumnData = {Header: string, Id: string|{"#text":string, "@Comment":string}, Type: string};
@@ -16,6 +15,8 @@ export default class Search extends AudioInformationComponent
 
 	public Columns:ColumnData[];
 
+	public PredefinedItemsCount:number = 0;
+
 	private static FieldMask = /\.\/.+?\/(.+)/;
 
 	constructor(data:any, results:KnockoutObservable<CockpitPortal.IAudioInformation[]|null>, predefinedData:any|null)
@@ -27,6 +28,8 @@ export default class Search extends AudioInformationComponent
 		if(predefinedData != null && predefinedData.Items && predefinedData.Items.Item && predefinedData.Items.Item.length > 0)
 		{
 			this.Results(predefinedData.Items.Item.map((item:CockpitPortal.IAudioInformation, index:number) => this.CreateSearchResult(this.ConvertData(item), index)));
+
+			this.PredefinedItemsCount = this.Results().length;
 		}
 
 		this.HasResults = this.PureComputed(() => this.Results().length > 0);

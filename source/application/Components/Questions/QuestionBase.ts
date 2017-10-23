@@ -14,6 +14,7 @@ class QuestionsBase<T> extends DisposableComponent implements IQuestionViewModel
 	constructor(question: QuestionModel, requiresInput:boolean = true)
 	{
 		super();
+
 		this.Model = question;
 		this.Model.RequiresInput = requiresInput;
 		this.HasAnswer = knockout.computed(() => this.Model.Answer() != null && this.HasNoneEventsProperty(this.GetAnswer()));

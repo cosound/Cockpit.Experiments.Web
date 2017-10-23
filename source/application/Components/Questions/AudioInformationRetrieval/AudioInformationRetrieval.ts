@@ -66,6 +66,8 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 		});
 		this.InitializeSelected();
 		this.InitializeSegmentRating();
+
+		this.UpdateIsAnswerValid();
 	}
 
 	private InitializeSelected():void
@@ -93,6 +95,11 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 			this.UpdateAnswer(this.ItemList.Selected().Data.Id, s => s.Rating = rating);
 			this.AddEvent("Answer", this.ItemList.Selected().Data.Id, "Selection", JSON.stringify({Rating: rating}));
 		});
+	}
+
+	protected HasValidAnswer(answer: {Selections:Selection[]}): boolean
+	{
+		return this.ItemList.PredefinedItemsCount === 0 || answer.Selections.length === this.ItemList.PredefinedItemsCount + 1;
 	}
 
 	private InitializeSegmentRating():void

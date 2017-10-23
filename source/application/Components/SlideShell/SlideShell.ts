@@ -1,8 +1,9 @@
 ﻿import knockout = require("knockout");
 import ExperimentManager = require("Managers/Portal/Experiment");
 import SlideModel = require("Models/Slide");
+import DisposableComponent = require("Components/DisposableComponent");
 
-class SlideShell
+class SlideShell extends DisposableComponent
 {
 	public Title: KnockoutObservable<string>;
 	public HasTitle: KnockoutComputed<boolean>;
@@ -26,33 +27,32 @@ class SlideShell
 	public IsWaiting: KnockoutComputed<boolean>;
 	public IsWaitingForNext: KnockoutObservable<boolean> = knockout.observable(false);
 
-	private _subscriptions:KnockoutSubscription[] = [];
-
 	constructor()
 	{
-		this.IsLoadingSlide = knockout.computed(() => this.SlideData() == null);
+		super();
+		this.IsLoadingSlide = this.Computed(() => this.SlideData() == null);
 		this.SlideIndex = ExperimentManager.CurrentSlideIndex;
-		this.SlideNumber = knockout.computed(() => this.SlideIndex() + 1);
+		this.SlideNumber = this.Computed(() => this.SlideIndex() + 1);
 		this.NumberOfSlides = ExperimentManager.NumberOfSlides;
 
-		this.IsWaiting = knockout.computed(() => this.IsWaitingForNext());
+		this.IsWaiting = this.Computed(() => this.IsWaitingForNext());
 
-		this.IsPreviousSlideVisible = knockout.computed(() => ExperimentManager.GoToPreviousSlideEnabled() && !ExperimentManager.CloseSlidesEnabled());
-		this.IsPreviousSlideEnabled = knockout.computed(() => this.IsPreviousSlideVisible() && !this.IsLoadingSlide() && this.SlideIndex() !== 0 && !this.IsWaiting());
-		this.IsNextSlideVisible = knockout.computed(() => this.SlideNumber() !== this.NumberOfSlides());
-		this.IsNextSlideEnabled = knockout.computed(() => this.IsNextSlideVisible() && !this.IsLoadingSlide() && !this.IsWaiting());
-		this.IsCloseExperimentVisible = knockout.computed(() => ExperimentManager.IsExperimentCompleted() && ExperimentManager.CloseExperimentEnabled());
-		this.IsCloseExperimentEnabled = knockout.computed(() => this.IsCloseExperimentVisible() && !this.IsWaiting());
+		this.IsPreviousSlideVisible = this.Computed(() => ExperimentManager.GoToPreviousSlideEnabled() && !ExperimentManager.CloseSlidesEnabled());
+		this.IsPreviousSlideEnabled = this.Computed(() => this.IsPreviousSlideVisible() && !this.IsLoadingSlide() && this.SlideIndex() !== 0 && !this.IsWaiting());
+		this.IsNextSlideVisible = this.Computed(() => this.SlideNumber() !== this.NumberOfSlides());
+		this.IsNextSlideEnabled = this.Computed(() => this.IsNextSlideVisible() && !this.IsLoadingSlide() && !this.IsWaiting());
+		this.IsCloseExperimentVisible = this.Computed(() => ExperimentManager.IsExperimentCompleted() && ExperimentManager.CloseExperimentEnabled());
+		this.IsCloseExperimentEnabled = this.Computed(() => this.IsCloseExperimentVisible() && !this.IsWaiting());
 
 		this.Title = ExperimentManager.SlideTitle;
-		this.HasTitle = knockout.computed(() => this.Title() !== "");
+		this.HasTitle = this.Computed(() => this.Title() !== "");
 
-		this._subscriptions.push(ExperimentManager.IsReady.subscribe(r =>
+		this.Subscribe(ExperimentManager.IsReady,r =>
 		{
 			if (!r) return;
 
 			this.LoadNextSlide();
-		}));
+		});
 
 		this.IsHighlighted.subscribe(value =>
 		{
@@ -66,9 +66,11 @@ class SlideShell
 	{
 		this.IsWaitingForNext(true);
 
-		this.DoWhenDone(() => !this.IsLoadingSlide() && !this.SlideData().IsWorking(), () =>
+		this.AddAction(() => !this.IsLoadingSlide() && !this.SlideData().IsWorking(), () =>
 		{
 			this.IsWaitingForNext(false);
+
+			console.log("Goto", this.AreAllQuestionsAnswered())
 
 			if (this.AreAllQuestionsAnswered())
 			{
@@ -103,28 +105,13 @@ class SlideShell
 		ExperimentManager.LoadPreviousSlide((index, questions) => this.SlideData(new SlideModel("Slides/Default", index, this.AreAllQuestionsAnswered, questions)));
 	}
 
-	private DoWhenDone(check:() => boolean, action:() => void):void
-	{
-		if (check())
-		{
-			action();
-			return;
-		}
-		var sub = knockout.computed(check).subscribe(v =>
-		{
-			sub.dispose();
-			action();
-		});
-		this._subscriptions.push(sub);
-	}
-
 	private UnloadSlide(complete:boolean):void
 	{
 		this.IsHighlighted(false);
 
 		if (complete && this.SlideData() != null)
 		{
-			var oldSlide = this.SlideData();
+			const oldSlide = this.SlideData();
 			this.SlideData().Complete(() => ExperimentManager.CloseSlide(oldSlide.Index));
 		}
 
@@ -134,12 +121,6 @@ class SlideShell
 	public Close():void
 	{
 		ExperimentManager.Close();
-	}
-
-	public dispose():void
-	{
-		this._subscriptions.forEach(s => s.dispose());
-
 	}
 }
 
