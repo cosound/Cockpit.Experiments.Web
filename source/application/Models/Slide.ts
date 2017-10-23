@@ -8,7 +8,7 @@ class Slide
 	public IsWorking:KnockoutComputed<boolean>;
 	public CanGoToNextSlide:KnockoutObservable<boolean>;
 	public Questions:CockpitPortal.IQuestion[];
-	public SlideCompleted: (completed: () => void) => void;
+	public SlideCompleted: (waitForSave:boolean, completed: () => void) => void;
 	public ScrollToFirstInvalidAnswerCallback: () => void;
 
 	private _isWorking:KnockoutObservable<KnockoutComputed<boolean>> = knockout.observable(null);
@@ -22,9 +22,9 @@ class Slide
 		this.IsWorking = knockout.computed(() => this._isWorking() != null ? this._isWorking()() : false);
 	}
 
-	public Complete(callback:()=>void):void
+	public Complete(waitForSave:boolean, callback:()=>void):void
 	{
-		if (this.SlideCompleted != null) this.SlideCompleted(callback);
+		if (this.SlideCompleted != null) this.SlideCompleted(waitForSave, callback);
 	}
 
 	public ScrollToFirstInvalidAnswer():void

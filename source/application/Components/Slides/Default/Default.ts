@@ -10,8 +10,9 @@ class Default extends DisposableComponent
 {
 	private _slide: SlideModel;
 	private _uiLessQuestions: IQuestionViewModel[] = [];
-	private _activeAnsweSets: KnockoutObservable<number> = knockout.observable(0);
+	private _activeAnswerSets: KnockoutObservable<number> = knockout.observable(0);
 	private _isWorking:KnockoutObservable<boolean> = knockout.observable(false);
+	private _isCompleted = false;
 
 	public Questions: QuestionModel[] = [];
 	public HaveActiveAnswersSets:KnockoutComputed<boolean>;
@@ -20,10 +21,10 @@ class Default extends DisposableComponent
 	{
 		super();
 		this._slide = slide;
-		slide.SlideCompleted = callback => this.SlideCompleted(callback);
+		slide.SlideCompleted = (waitForSave, callback) => this.SlideCompleted(waitForSave, callback);
 		slide.ScrollToFirstInvalidAnswerCallback = () => this.ScrollToFirstInvalidAnswer();
 
-		this.HaveActiveAnswersSets = this.Computed(() => this._activeAnsweSets() !== 0);
+		this.HaveActiveAnswersSets = this.Computed(() => this._activeAnswerSets() !== 0);
 		slide.SetIsWorking(this.Computed(() => this._isWorking() || this.HaveActiveAnswersSets()));
 
 		this.InitializeQuestions(slide.Questions);
@@ -37,7 +38,9 @@ class Default extends DisposableComponent
 		for (var i = 0; i < questions.length; i++)
 		{
 			var questionModel = new QuestionModel(questions[i], question => this.AnswerChanged(question), loaded);
-			this.Subscribe(questionModel.HasValidAnswer, () => this.CheckIfAllQuestionsAreAnswered());
+			this.Subscribe(questionModel.HasValidAnswer, () => {
+				this.CheckIfAllQuestionsAreAnswered()
+			});
 			this.Questions.push(questionModel);
 
 			if (!questionModel.HasUIElement)
@@ -54,24 +57,27 @@ class Default extends DisposableComponent
 			this._uiLessQuestions[i].SlideLoaded();
 
 		this.CheckIfAllQuestionsAreAnswered();
-
-		console.log("SlideLoaded", this._slide.CanGoToNextSlide())
 	}
 
-	private SlideCompleted(completed: () => void):void
+	private SlideCompleted(waitForSave:boolean, completed: () => void):void
 	{
-		var waitForAnswerSaved = false;
+		this._isCompleted = true;
 
-		for (var i = 0; i < this._uiLessQuestions.length; i++)
+		if(waitForSave)
 		{
-			waitForAnswerSaved = this._uiLessQuestions[i].SlideCompleted() || waitForAnswerSaved;
+			var waitForAnswerSaved = false;
+
+			for (var i = 0; i < this._uiLessQuestions.length; i++)
+			{
+				waitForAnswerSaved = this._uiLessQuestions[i].SlideCompleted() || waitForAnswerSaved;
+			}
+
+			if (waitForAnswerSaved)
+			{
+				this.SubscribeUntilChange(this.HaveActiveAnswersSets, completed)
+			} else
+				completed();
 		}
-
-		if (waitForAnswerSaved)
-		{
-			this.SubscribeUntilChange(this.HaveActiveAnswersSets, completed)
-		} else
-			completed();
 	}
 
 	private ScrollToFirstInvalidAnswer():void
@@ -85,14 +91,14 @@ class Default extends DisposableComponent
 	{
 		if (question.HasValidAnswer())
 		{
-			this._activeAnsweSets(this._activeAnsweSets() + 1);
+			this._activeAnswerSets(this._activeAnswerSets() + 1);
 
 			ExperimentManager.SaveQuestionAnswer(question.Id, question.Answer(), success =>
 			{
 				if (!success) question.HasValidAnswer(false);
 
 				this._isWorking(true);
-				this._activeAnsweSets(this._activeAnsweSets() - 1);
+				this._activeAnswerSets(this._activeAnswerSets() - 1);
 				this.CheckIfAllQuestionsAreAnswered();
 				this._isWorking(false);
 			});
@@ -105,8 +111,6 @@ class Default extends DisposableComponent
 	{
 		for (let i = 0; i < this.Questions.length; i++)
 		{
-			console.log(this.Questions[i].Type, this.Questions[i].RequiresInput, this.Questions[i].HasValidAnswer())
-
 			if (this.Questions[i].RequiresInput && !this.Questions[i].HasValidAnswer()) return this.Questions[i];
 		}
 
@@ -115,11 +119,10 @@ class Default extends DisposableComponent
 
 	private CheckIfAllQuestionsAreAnswered():void
 	{
-		console.log("CheckIfAllQuestionsAreAnswered", "Start")
+		if(this._isCompleted)
+			return
 
 		this._slide.CanGoToNextSlide(this.GetFirstQuestionWithoutValidAnswer() == null && !this.HaveActiveAnswersSets());
-
-		console.log("CheckIfAllQuestionsAreAnswered", this._slide.CanGoToNextSlide())
 	}
 }
 

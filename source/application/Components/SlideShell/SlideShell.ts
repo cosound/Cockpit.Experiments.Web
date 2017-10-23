@@ -70,8 +70,6 @@ class SlideShell extends DisposableComponent
 		{
 			this.IsWaitingForNext(false);
 
-			console.log("Goto", this.AreAllQuestionsAnswered())
-
 			if (this.AreAllQuestionsAnswered())
 			{
 				this.LoadNextSlide();
@@ -109,10 +107,10 @@ class SlideShell extends DisposableComponent
 	{
 		this.IsHighlighted(false);
 
-		if (complete && this.SlideData() != null)
+		if (this.SlideData() != null)
 		{
 			const oldSlide = this.SlideData();
-			this.SlideData().Complete(() => ExperimentManager.CloseSlide(oldSlide.Index));
+			this.SlideData().Complete(complete, () => ExperimentManager.CloseSlide(oldSlide.Index));
 		}
 
 		this.SlideData(null);

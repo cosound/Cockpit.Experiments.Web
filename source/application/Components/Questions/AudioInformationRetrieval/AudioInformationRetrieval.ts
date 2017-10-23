@@ -99,7 +99,7 @@ class AudioInformationRetrieval extends QuestionBase<{Selections:Selection[]}>
 
 	protected HasValidAnswer(answer: {Selections:Selection[]}): boolean
 	{
-		return this.ItemList.PredefinedItemsCount === 0 || answer.Selections.length === this.ItemList.PredefinedItemsCount + 1;
+		return this.ItemList.PredefinedItemsCount === 0 || answer.Selections.length === this.ItemList.PredefinedItemsCount;
 	}
 
 	private InitializeSegmentRating():void
